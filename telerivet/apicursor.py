@@ -1,10 +1,10 @@
 class APICursor:    
     """
-    An easy-to-use interface for interacting with API methods that return lists of entities that may
-    be split into multiple result pages.
+    An easy-to-use interface for interacting with API methods that return collections of objects
+    that may be split into multiple pages of results.
     
     Using the APICursor, you can easily iterate over query results without having to
-    handle fetching each page of results.
+    manually fetch each page of results.
     
     """
 
@@ -32,8 +32,12 @@ class APICursor:
         """
         Limits the maximum number of entities fetched by this query.
         
+        By default, iterating over the cursor will automatically fetch
+        additional result pages as necessary. To prevent fetching more objects than you need, call
+        this method to set the maximum number of objects retrieved from the API.
+        
         Arguments:
-          - limit
+          - limit (int)
               * The maximum number of entities to fetch from the server (may require multiple API
                   calls if greater than 200)
               * Required

@@ -121,7 +121,8 @@ class Service(Entity):
         
     def setContactState(self, contact, **options):
         """
-        Initializes or updates the current state for a particular contact for this service.
+        Initializes or updates the current state for a particular contact for the given service. If
+        the state id is null, the contact's state will be reset.
         
         Arguments:
           - contact (Contact)
@@ -146,7 +147,7 @@ class Service(Entity):
     
     def resetContactState(self, contact):
         """
-        Resets the current state for a particular contact for this service.
+        Resets the current state for a particular contact for the given service.
         
         Arguments:
           - contact (Contact)
@@ -158,8 +159,6 @@ class Service(Entity):
         """
         from .contactservicestate import ContactServiceState
         return ContactServiceState(self._api, self._api.doRequest('DELETE', self.getBaseApiPath() + '/states/' + contact.id))
-
-    _has_custom_vars = True
 
     def queryContactStates(self, **options):
         """

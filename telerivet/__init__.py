@@ -3,7 +3,7 @@ class API:
     """
     """
     
-    client_version = '1.0'
+    client_version = '1.0.1'
     
     def __init__(self, api_key, api_url = 'https://api.telerivet.com/v1'):
         self.api_key = api_key
@@ -48,7 +48,7 @@ class API:
     
     def getProjectById(self, id):
         """
-        Gets a Telerivet project by its ID.
+        Retrieves the Telerivet project with the given ID.
         
         Arguments:
           - id

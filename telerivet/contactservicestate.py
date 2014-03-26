@@ -2,8 +2,6 @@
 from .entity import Entity
 
 class ContactServiceState(Entity):
-    _has_custom_vars = True
-
     def save(self):
         """
         Saves the state id and any custom variables for this contact. If the state id is null, this

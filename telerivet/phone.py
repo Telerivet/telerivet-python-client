@@ -2,8 +2,6 @@
 from .entity import Entity
 
 class Phone(Entity):
-    _has_custom_vars = True
-
     def queryMessages(self, **options):
         """
         Queries messages sent or received by this phone.

@@ -4,7 +4,7 @@ from .entity import Entity
 class Group(Entity):
     def queryContacts(self, **options):
         """
-        Queries contacts that are members of this group.
+        Queries contacts that are members of the given group.
         
         Arguments:
             
@@ -60,7 +60,7 @@ class Group(Entity):
 
     def queryScheduledMessages(self, **options):
         """
-        Queries scheduled messages to this group.
+        Queries scheduled messages to the given group.
         
         Arguments:
             

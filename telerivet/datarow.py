@@ -2,8 +2,6 @@
 from .entity import Entity
 
 class DataRow(Entity):
-    _has_custom_vars = True
-
     def save(self):
         """
         Saves any fields or custom variables that have changed for this data row.

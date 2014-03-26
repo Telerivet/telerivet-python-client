@@ -2,6 +2,13 @@
 from .entity import Entity
 
 class ScheduledMessage(Entity):
+    def save(self):
+        """
+        Saves any fields or custom variables that have changed for this scheduled message.
+        
+        """
+        super(ScheduledMessage, self).save()
+
     def delete(self):
         """
         Cancels this scheduled message.

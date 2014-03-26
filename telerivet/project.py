@@ -32,7 +32,7 @@ class Project(Entity):
 
     def getOrCreateGroup(self, name):
         """
-        Gets or creates a group by name.
+        Retrieves or creates a group by name.
         
         Arguments:
           - name
@@ -50,7 +50,9 @@ class Project(Entity):
         Gets or creates a label by name.
         
         Arguments:
-          - name (Name of the label)
+          - name
+              * Name of the label
+              * Required
           
         Returns:
             Label
@@ -58,8 +60,6 @@ class Project(Entity):
         from .label import Label
         return Label(self._api, self._api.doRequest("POST", self.getBaseApiPath() + "/labels", {'name': name}))
     
-    _has_custom_vars = True
-
     def sendMessage(self, **options):
         """
         Sends one message (SMS or USSD request).
@@ -100,6 +100,9 @@ class Project(Entity):
                 * Type of message to send
                 * Allowed values: sms, ussd
                 * Default: sms
+            
+            - vars (dict)
+                * Custom variables to store with the message
             
             - priority (int)
                 * Priority of the message (currently only observed for Android phones). Telerivet
@@ -153,6 +156,9 @@ class Project(Entity):
             - is_template (bool)
                 * Set to true to evaluate variables like [[contact.name]] in message content
                 * Default: false
+            
+            - vars (dict)
+                * Custom variables to set for each message
           
         Returns:
             (associative array)
@@ -164,7 +170,9 @@ class Project(Entity):
 
     def scheduleMessage(self, **options):
         """
-        Schedules an SMS message to a group or single contact
+        Schedules an SMS message to a group or single contact. Note that Telerivet only sends
+        scheduled messages approximately once per minute, so it is not possible to control the exact
+        second at which a scheduled message is sent.
         
         Arguments:
               * Required
@@ -192,7 +200,7 @@ class Project(Entity):
             - rrule
                 * A recurrence rule describing the how the schedule repeats, e.g. 'FREQ=MONTHLY' or
                     'FREQ=WEEKLY;INTERVAL=2'; see <https://tools.ietf.org/html/rfc2445#section-4.3.10>.
-                    (UNTIL is ignored; use end_time parameter)
+                    (UNTIL is ignored; use end_time parameter instead).
                 * Default: COUNT=1 (one-time scheduled message, does not repeat)
             
             - route_id
@@ -231,7 +239,7 @@ class Project(Entity):
 
     def getOrCreateContact(self, **options):
         """
-        Gets OR creates and possibly updates a contact by name or phone number.
+        Retrieves OR creates and possibly updates a contact by name or phone number.
         
         If a phone number is provided, Telerivet will search for an existing
         contact with that phone number (including suffix matches to allow finding contacts with
@@ -267,7 +275,7 @@ class Project(Entity):
 
     def queryContacts(self, **options):
         """
-        Queries contacts within this project.
+        Queries contacts within the given project.
         
         Arguments:
             
@@ -323,7 +331,7 @@ class Project(Entity):
 
     def getContactById(self, id):
         """
-        Gets a contact by ID.
+        Retrieves the contact with the given ID.
         
         Note: This does not make any API requests until you access a property of the Contact.
         
@@ -340,7 +348,7 @@ class Project(Entity):
 
     def queryPhones(self, **options):
         """
-        Queries phones within this project.
+        Queries phones within the given project.
         
         Arguments:
             
@@ -386,7 +394,7 @@ class Project(Entity):
 
     def getPhoneById(self, id):
         """
-        Gets a phone by ID.
+        Retrieves the phone with the given ID.
         
         Note: This does not make any API requests until you access a property of the Phone.
         
@@ -403,7 +411,7 @@ class Project(Entity):
 
     def queryMessages(self, **options):
         """
-        Queries messages within this project.
+        Queries messages within the given project.
         
         Arguments:
             
@@ -465,7 +473,7 @@ class Project(Entity):
 
     def getMessageById(self, id):
         """
-        Gets a message by ID.
+        Retrieves the message with the given ID.
         
         Note: This does not make any API requests until you access a property of the Message.
         
@@ -482,7 +490,7 @@ class Project(Entity):
 
     def queryGroups(self, **options):
         """
-        Queries groups within this project.
+        Queries groups within the given project.
         
         Arguments:
             
@@ -517,7 +525,7 @@ class Project(Entity):
 
     def getGroupById(self, id):
         """
-        Gets a group by ID.
+        Retrieves the group with the given ID.
         
         Note: This does not make any API requests until you access a property of the Group.
         
@@ -534,7 +542,7 @@ class Project(Entity):
 
     def queryLabels(self, **options):
         """
-        Queries labels within this project.
+        Queries labels within the given project.
         
         Arguments:
             
@@ -569,7 +577,7 @@ class Project(Entity):
 
     def getLabelById(self, id):
         """
-        Gets a label by ID.
+        Retrieves the label with the given ID.
         
         Note: This does not make any API requests until you access a property of the Label.
         
@@ -585,7 +593,7 @@ class Project(Entity):
 
     def queryDataTables(self, **options):
         """
-        Queries data tables within this project.
+        Queries data tables within the given project.
         
         Arguments:
             
@@ -620,7 +628,7 @@ class Project(Entity):
 
     def getDataTableById(self, id):
         """
-        Gets a data table by ID.
+        Retrieves the data table with the given ID.
         
         Note: This does not make any API requests until you access a property of the DataTable.
         
@@ -636,7 +644,7 @@ class Project(Entity):
 
     def queryScheduledMessages(self, **options):
         """
-        Queries scheduled messages within this project.
+        Queries scheduled messages within the given project.
         
         Arguments:
             
@@ -679,7 +687,7 @@ class Project(Entity):
 
     def getScheduledMessageById(self, id):
         """
-        Gets a scheduled message by ID.
+        Retrieves the scheduled message with the given ID.
         
         Note: This does not make any API requests until you access a property of the
         ScheduledMessage.
@@ -696,7 +704,7 @@ class Project(Entity):
 
     def queryServices(self, **options):
         """
-        Queries services within this project.
+        Queries services within the given project.
         
         Arguments:
             
@@ -738,7 +746,7 @@ class Project(Entity):
 
     def getServiceById(self, id):
         """
-        Gets a service by ID.
+        Retrieves the service with the given ID.
         
         Note: This does not make any API requests until you access a property of the Service.
         
@@ -754,7 +762,7 @@ class Project(Entity):
 
     def queryReceipts(self, **options):
         """
-        Queries mobile money receipts within this project.
+        Queries mobile money receipts within the given project.
         
         Arguments:
             
@@ -807,7 +815,7 @@ class Project(Entity):
 
     def getReceiptById(self, id):
         """
-        Gets a mobile money receipt by ID.
+        Retrieves the mobile money receipt with the given ID.
         
         Note: This does not make any API requests until you access a property of the
         MobileMoneyReceipt.
@@ -825,7 +833,7 @@ class Project(Entity):
 
     def save(self):
         """
-        Saves any fields or custom variables that have changed for this project.
+        Saves any fields or custom variables that have changed for the project.
         
         """
         super(Project, self).save()

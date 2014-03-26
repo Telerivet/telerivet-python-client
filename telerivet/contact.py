@@ -91,8 +91,6 @@ class Contact(Entity):
         if group.id in self._group_ids_set:
             del self._group_ids_set[group.id]
 
-    _has_custom_vars = True
-
     def queryMessages(self, **options):
         """
         Queries messages sent or received by this contact.

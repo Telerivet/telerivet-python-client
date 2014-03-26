@@ -4,7 +4,7 @@ from .entity import Entity
 class Label(Entity):
     def queryMessages(self, **options):
         """
-        Queries messages with this label.
+        Queries messages with the given label.
         
         Arguments:
             
@@ -66,14 +66,14 @@ class Label(Entity):
 
     def save(self):
         """
-        Saves any fields that have changed for this label.
+        Saves any fields that have changed for the label.
         
         """
         super(Label, self).save()
 
     def delete(self):
         """
-        Deletes this label (Note: no messages are deleted.)
+        Deletes the given label (Note: no messages are deleted.)
         
         """
         self._api.doRequest("DELETE", self.getBaseApiPath())

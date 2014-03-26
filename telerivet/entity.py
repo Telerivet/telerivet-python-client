@@ -13,11 +13,10 @@ class Entity(object):
     def _setData(self, data):
         self._data = data
         
-        if self._has_custom_vars:
-            if 'vars' in data:            
-                self._vars = CustomVars(data['vars'])
-            else:
-                self._vars = CustomVars({})
+        if 'vars' in data:            
+            self._vars = CustomVars(data['vars'])
+        else:
+            self._vars = CustomVars({})
     
     def _loadData(self):    
         if not self._is_loaded:

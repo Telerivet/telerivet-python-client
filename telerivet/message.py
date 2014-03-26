@@ -76,6 +76,10 @@ class Message(Entity):
           * List of IDs of labels applied to this message
           * Read-only
       
+      - vars (dict)
+          * Custom variables stored for this message
+          * Updatable via API
+      
       - mms_parts (array)
           * List of MMS parts for this message (null for non-MMS messages).
               Only included when retrieving an individual message, not when
@@ -115,7 +119,7 @@ class Message(Entity):
       
     def addLabel(self, label):
         """
-        Adds a label to this message.
+        Adds a label to the given message.
         
         Arguments:
           - label (Label)
@@ -128,7 +132,7 @@ class Message(Entity):
     
     def removeLabel(self, label):
         """
-        Removes a label from this message.
+        Removes a label from the given message.
         
         Arguments:
           - label (Label)

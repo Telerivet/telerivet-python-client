@@ -65,7 +65,7 @@ class DataTable(Entity):
 
     def getRowById(self, id):
         """
-        Gets a row in this table by its ID.
+        Retrieves the row in the given table with the given ID.
         
         Note: This does not make any API requests until you access a property of the DataRow.
         
