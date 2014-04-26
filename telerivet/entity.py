@@ -68,6 +68,16 @@ class Entity(object):
         if self._vars is not None:
             self._vars.clearDirtyVariables()
     
+    def __repr__(self):
+        res = self.__class__.__name__
+        if not self._is_loaded:
+            res += " (not loaded)";
+
+        import json
+        res += " JSON: " + json.dumps(self._data)
+        
+        return res
+    
     def getBaseApiPath(self):
         abstract
 

@@ -2,6 +2,33 @@
 from .entity import Entity
 
 class Label(Entity):
+    """
+    Represents a label used to organize messages within Telerivet.
+    
+    Fields:
+    
+      - id (string, max 34 characters)
+          * ID of the label
+          * Read-only
+      
+      - name
+          * Name of the label
+          * Updatable via API
+      
+      - time_created (UNIX timestamp)
+          * Time the label was created in Telerivet
+          * Read-only
+      
+      - vars (dict)
+          * Custom variables stored for this label
+          * Updatable via API
+      
+      - project_id
+          * ID of the project this label belongs to
+          * Read-only
+      
+    """
+
     def queryMessages(self, **options):
         """
         Queries messages with the given label.

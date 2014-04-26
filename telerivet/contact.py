@@ -32,7 +32,7 @@ class Contact(Entity):
       
       - default_route_id
           * ID of the phone or route that Telerivet will use by default to send messages to this
-              contact
+              contact (null if using project default route)
           * Updatable via API
       
       - group_ids (array of strings)

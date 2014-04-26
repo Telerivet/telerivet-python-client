@@ -2,6 +2,86 @@
 from .entity import Entity
 
 class Phone(Entity):
+    """
+    Represents a phone or gateway that you use to send/receive messages via Telerivet.
+    
+    Fields:
+    
+      - id (string, max 34 characters)
+          * ID of the phone
+          * Read-only
+      
+      - name
+          * Name of the phone
+          * Updatable via API
+      
+      - phone_number (string)
+          * Phone number of the phone
+          * Updatable via API
+      
+      - phone_type
+          * Type of this phone/gateway (e.g. android, twilio, nexmo, etc)
+          * Read-only
+      
+      - time_created (UNIX timestamp)
+          * Time the phone was created in Telerivet
+          * Read-only
+      
+      - last_active_time (UNIX timestamp)
+          * Approximate time this phone last connected to Telerivet
+          * Read-only
+      
+      - vars (dict)
+          * Custom variables stored for this phone
+          * Updatable via API
+      
+      - project_id
+          * ID of the project this phone belongs to
+          * Read-only
+      
+      - battery (int)
+          * Current battery level, on a scale from 0 to 100, as of the last time the phone connected
+              to Telerivet (only present for Android phones)
+          * Read-only
+      
+      - charging (bool)
+          * True if the phone is currently charging, false if it is running on battery, as of the
+              last time it connected to Telerivet (only present for Android phones)
+          * Read-only
+      
+      - app_version
+          * Currently installed version of Telerivet Android app (only present for Android phones)
+          * Read-only
+      
+      - android_sdk (int)
+          * Android SDK level, indicating the approximate version of the Android OS installed on
+              this phone; see
+              <http://developer.android.com/guide/topics/manifest/uses-sdk-element.html#ApiLevels> (only
+              present for Android phones)
+          * Read-only
+      
+      - mccmnc
+          * Code indicating the Android phone's current country (MCC) and mobile network operator
+              (MNC); see <http://en.wikipedia.org/wiki/Mobile_country_code> (only present for Android
+              phones). Note this is a string containing numeric digits, not an integer.
+          * Read-only
+      
+      - manufacturer
+          * Android phone manufacturer (only present for Android phones)
+          * Read-only
+      
+      - model
+          * Android phone model (only present for Android phones)
+          * Read-only
+      
+      - send_limit (int)
+          * Maximum number of SMS messages per hour that can be sent by this Android phone. To
+              increase this limit, install additional SMS expansion packs in the Telerivet app. (only
+              present for Android phones)
+          * Read-only
+      
+    """
+
     def queryMessages(self, **options):
         """
         Queries messages sent or received by this phone.

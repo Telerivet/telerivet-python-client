@@ -2,6 +2,37 @@
 from .entity import Entity
 
 class Group(Entity):
+    """
+    Represents a group used to organize contacts within Telerivet.
+    
+    Fields:
+    
+      - id (string, max 34 characters)
+          * ID of the group
+          * Read-only
+      
+      - name
+          * Name of the group
+          * Updatable via API
+      
+      - num_members (int)
+          * Number of contacts in the group
+          * Read-only
+      
+      - time_created (UNIX timestamp)
+          * Time the group was created in Telerivet
+          * Read-only
+      
+      - vars (dict)
+          * Custom variables stored for this group
+          * Updatable via API
+      
+      - project_id
+          * ID of the project this group belongs to
+          * Read-only
+      
+    """
+
     def queryContacts(self, **options):
         """
         Queries contacts that are members of the given group.

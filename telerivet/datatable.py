@@ -2,6 +2,38 @@
 from .entity import Entity
 
 class DataTable(Entity):
+    """
+    Represents a custom data table that can store arbitrary rows.
+    
+    For example, poll services use data tables to store a row for each response.
+    
+    It is currently only possible to create new data tables via the web UI; however,
+    after a table is created, you can add/update/delete rows via the API.
+    
+    Fields:
+    
+      - id (string, max 34 characters)
+          * ID of the data table
+          * Read-only
+      
+      - name
+          * Name of the data table
+          * Updatable via API
+      
+      - num_rows (int)
+          * Number of rows in the table
+          * Read-only
+      
+      - vars (dict)
+          * Custom variables stored for this data table
+          * Updatable via API
+      
+      - project_id
+          * ID of the project this data table belongs to
+          * Read-only
+      
+    """
+
     def queryRows(self, **options):
         """
         Queries rows in this data table.

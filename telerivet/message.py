@@ -10,14 +10,6 @@ class Message(Entity):
           * ID of the message
           * Read-only
       
-      - phone_id (string, max 34 characters)
-          * ID of the phone that sent or received the message
-          * Read-only
-      
-      - contact_id (string, max 34 characters)
-          * ID of the contact that sent or received the message
-          * Read-only
-      
       - direction
           * Direction of the message: incoming messages are sent from one of your contacts to your
               phone; outgoing messages are sent from your phone to one of your contacts
@@ -94,6 +86,32 @@ class Message(Entity):
               - url: URL where the content for this part is stored (secret but
               publicly accessible, so you could link/embed it in a web page without having to re-host it
               yourself)
+          * Read-only
+      
+      - error_message
+          * A description of the error encountered while sending a message. (This field is omitted
+              from the API response if there is no error message.)
+          * Updatable via API
+      
+      - external_id
+          * The ID of this message from an external SMS gateway provider (e.g. Twilio or Nexmo), if
+              available.
+          * Read-only
+      
+      - price
+          * The price of this message, if known. By convention, message prices are negative.
+          * Read-only
+      
+      - price_currency
+          * The currency of the message price, if applicable.
+          * Read-only
+      
+      - phone_id (string, max 34 characters)
+          * ID of the phone that sent or received the message
+          * Read-only
+      
+      - contact_id (string, max 34 characters)
+          * ID of the contact that sent or received the message
           * Read-only
       
       - project_id
