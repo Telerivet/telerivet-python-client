@@ -50,6 +50,26 @@ class Service(Entity):
           * ID of the project this service belongs to
           * Read-only
       
+      - label_id
+          * ID of the label containing messages sent or received by this service (currently only
+              used for polls)
+          * Read-only
+      
+      - response_table_id
+          * ID of the data table where responses to this service will be stored (currently only used
+              for polls)
+          * Read-only
+      
+      - sample_group_id
+          * ID of the group containing contacts that have been invited to interact with this service
+              (currently only used for polls)
+          * Read-only
+      
+      - respondent_group_id
+          * ID of the group containing contacts that have completed an interaction with this service
+              (currently only used for polls)
+          * Read-only
+      
     """
 
     def invoke(self, **options):
@@ -61,8 +81,8 @@ class Service(Entity):
         the ID of the contact to send the poll to.
         
         Or, to manually apply a service for an incoming message, you can
-        invoke the service with context=message, event=incoming_message, and message_id as the ID of
-        the incoming message. (This is normally not necessary, but could be used if you want to
+        invoke the service with context=message, event=incoming\_message, and message_id as the ID
+        of the incoming message. (This is normally not necessary, but could be used if you want to
         override Telerivet's standard priority-ordering of services.)
         
         Arguments:

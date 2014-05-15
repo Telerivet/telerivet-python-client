@@ -111,12 +111,47 @@ class DataTable(Entity):
         from .datarow import DataRow
         return DataRow(self._api, {'project_id': self.project_id, 'table_id': self.id, 'id': id}, False)
 
+    def getFields(self):
+        """
+        Gets a list of all fields (columns) defined for this data table. The return value is an
+        array of objects with the properties 'name' and 'variable'. (Fields are automatically
+        created any time a DataRow's 'vars' property is updated.)
+        
+        Returns:
+            array
+        """
+        return self._api.doRequest("GET", self.getBaseApiPath() + "/fields")
+
+    def countRowsByValue(self, variable):
+        """
+        Returns the number of rows for each value of a given variable. This can be used to get the
+        total number of responses for each choice in a poll, without making a separate query for
+        each response choice. The return value is an object mapping values to row counts, e.g.
+        `{"yes":7,"no":3}`
+        
+        Arguments:
+          - variable
+              * Variable of field to count by.
+              * Required
+          
+        Returns:
+            object
+        """
+        return self._api.doRequest("GET", self.getBaseApiPath() + "/count_rows_by_value", {'variable': variable})
+
     def save(self):
         """
         Saves any fields that have changed for this data table.
         
         """
         super(DataTable, self).save()
+
+    def delete(self):
+        """
+        Permanently deletes the given data table, including all its rows
+        
+        """
+        self._api.doRequest("DELETE", self.getBaseApiPath())
 
     def getBaseApiPath(self):
         return "/projects/%(project_id)s/tables/%(id)s" % {'project_id': self.project_id, 'id': self.id} 

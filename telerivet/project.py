@@ -30,36 +30,6 @@ class Project(Entity):
       
     """
 
-    def getOrCreateGroup(self, name):
-        """
-        Retrieves or creates a group by name.
-        
-        Arguments:
-          - name
-              * Name of the group
-              * Required
-          
-        Returns:
-            Group
-        """
-        from .group import Group
-        return Group(self._api, self._api.doRequest("POST", self.getBaseApiPath() + "/groups", {'name': name}))    
-        
-    def getOrCreateLabel(self, name):
-        """
-        Gets or creates a label by name.
-        
-        Arguments:
-          - name
-              * Name of the label
-              * Required
-          
-        Returns:
-            Label
-        """
-        from .label import Label
-        return Label(self._api, self._api.doRequest("POST", self.getBaseApiPath() + "/labels", {'name': name}))
-    
     def sendMessage(self, **options):
         """
         Sends one message (SMS or USSD request).
@@ -523,6 +493,21 @@ class Project(Entity):
         from .group import Group
         return self._api.newApiCursor(Group, self.getBaseApiPath() + "/groups", options)
 
+    def getOrCreateGroup(self, name):
+        """
+        Retrieves or creates a group by name.
+        
+        Arguments:
+          - name
+              * Name of the group
+              * Required
+          
+        Returns:
+            Group
+        """
+        from .group import Group
+        return Group(self._api, self._api.doRequest("POST", self.getBaseApiPath() + "/groups", {'name': name}))
+
     def getGroupById(self, id):
         """
         Retrieves the group with the given ID.
@@ -575,6 +560,21 @@ class Project(Entity):
         from .label import Label
         return self._api.newApiCursor(Label, self.getBaseApiPath() + "/labels", options)
 
+    def getOrCreateLabel(self, name):
+        """
+        Gets or creates a label by name.
+        
+        Arguments:
+          - name
+              * Name of the label
+              * Required
+          
+        Returns:
+            Label
+        """
+        from .label import Label
+        return Label(self._api, self._api.doRequest("POST", self.getBaseApiPath() + "/labels", {'name': name}))
+
     def getLabelById(self, id):
         """
         Retrieves the label with the given ID.
@@ -625,6 +625,21 @@ class Project(Entity):
         """
         from .datatable import DataTable
         return self._api.newApiCursor(DataTable, self.getBaseApiPath() + "/tables", options)
+
+    def getOrCreateDataTable(self, name):
+        """
+        Gets or creates a data table by name.
+        
+        Arguments:
+          - name
+              * Name of the data table
+              * Required
+          
+        Returns:
+            DataTable
+        """
+        from .datatable import DataTable
+        return DataTable(self._api, self._api.doRequest("POST", self.getBaseApiPath() + "/tables", {'name': name}))
 
     def getDataTableById(self, id):
         """

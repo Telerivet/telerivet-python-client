@@ -3,7 +3,7 @@ class API:
     """
     """
     
-    client_version = '1.0.1'
+    client_version = '1.0.2'
     
     def __init__(self, api_key, api_url = 'https://api.telerivet.com/v1'):
         self.api_key = api_key
