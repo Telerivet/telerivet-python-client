@@ -5,9 +5,12 @@ class DataRow(Entity):
     """
     Represents a row in a custom data table.
     
-    For example, each response to a poll is stored as one row in a data table. If a
-    poll has a question with ID 'q1', the verbatim response to that question would be stored in
-    row.vars.q1, and the response code would be stored in row.vars.q1_code.
+    For example, each response to a poll is stored as one row in a data table.
+    If a poll has a question with ID 'q1', the verbatim response to that question would be
+    stored in row.vars.q1, and the response code would be stored in row.vars.q1_code.
+    
+    Each custom variable name within a data row corresponds to a different
+    column/field of the data table.
     
     Fields:
     
@@ -21,8 +24,8 @@ class DataRow(Entity):
           * Updatable via API
       
       - from_number (string)
-          * Phone number that this row is associated with (or null if not associated with any phone
-              number)
+          * Phone number that this row is associated with (or null if not associated with any
+              phone number)
           * Updatable via API
       
       - vars (dict)
@@ -36,20 +39,17 @@ class DataRow(Entity):
       - project_id
           * ID of the project this data row belongs to
           * Read-only
-      
     """
 
     def save(self):
         """
         Saves any fields or custom variables that have changed for this data row.
-        
         """
         super(DataRow, self).save()
 
     def delete(self):
         """
         Deletes this data row.
-        
         """
         self._api.doRequest("DELETE", self.getBaseApiPath())
 

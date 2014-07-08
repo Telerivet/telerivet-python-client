@@ -1,7 +1,5 @@
 
-class Entity(object):
-    _has_custom_vars = False
-    
+class Entity(object):    
     def __init__(self, api, data, is_loaded = True):    
         self._api = api
         self._vars = None
@@ -16,16 +14,17 @@ class Entity(object):
         if 'vars' in data:            
             self._vars = CustomVars(data['vars'])
         else:
-            self._vars = CustomVars({})
+            self._vars = CustomVars({})    
     
-    def _loadData(self):    
+    def load(self):    
         if not self._is_loaded:
             self._is_loaded = True
-            self._setData(self._api.doRequest('GET', self.getBaseApiPath()))
+            self._setData(self._api.doRequest('GET', self.getBaseApiPath()))            
+            self._data.update(self._dirty)
         
     def __getattr__(self, name):    
         if name == 'vars':
-            self._loadData()
+            self.load()
             return self._vars
         
         data = self._data
@@ -34,22 +33,19 @@ class Entity(object):
         elif self._is_loaded:
             return None
 
-        self._loadData()
+        self.load()
         data = self._data
-        
+
         if name in data:
             return data[name]
-        
-        return None        
+
+        return None
     
     def __setattr__(self, name, value):
         if name.startswith('_'):
             self.__dict__[name] = value
             return
             
-        if not self._is_loaded:
-            self._loadData()
-
         self._data[name] = value
         self._dirty[name] = value
     
@@ -94,7 +90,7 @@ class CustomVars:
     
     def clearDirtyVariables(self):
         self._dirty = {}
-
+        
     def __getattr__(self, name):
         if name in self._vars:
             return self._vars[name]

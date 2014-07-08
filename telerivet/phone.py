@@ -40,30 +40,31 @@ class Phone(Entity):
           * Read-only
       
       - battery (int)
-          * Current battery level, on a scale from 0 to 100, as of the last time the phone connected
-              to Telerivet (only present for Android phones)
+          * Current battery level, on a scale from 0 to 100, as of the last time the phone
+              connected to Telerivet (only present for Android phones)
           * Read-only
       
       - charging (bool)
-          * True if the phone is currently charging, false if it is running on battery, as of the
-              last time it connected to Telerivet (only present for Android phones)
+          * True if the phone is currently charging, false if it is running on battery, as of
+              the last time it connected to Telerivet (only present for Android phones)
           * Read-only
       
       - app_version
-          * Currently installed version of Telerivet Android app (only present for Android phones)
+          * Currently installed version of Telerivet Android app (only present for Android
+              phones)
           * Read-only
       
       - android_sdk (int)
           * Android SDK level, indicating the approximate version of the Android OS installed on
               this phone; see
-              <http://developer.android.com/guide/topics/manifest/uses-sdk-element.html#ApiLevels> (only
-              present for Android phones)
+              <http://developer.android.com/guide/topics/manifest/uses-sdk-element.html#ApiLevels>
+              (only present for Android phones)
           * Read-only
       
       - mccmnc
-          * Code indicating the Android phone's current country (MCC) and mobile network operator
-              (MNC); see <http://en.wikipedia.org/wiki/Mobile_country_code> (only present for Android
-              phones). Note this is a string containing numeric digits, not an integer.
+          * Code indicating the Android phone's current country (MCC) and mobile network
+              operator (MNC); see <http://en.wikipedia.org/wiki/Mobile_country_code> (only present
+              for Android phones). Note this is a string containing numeric digits, not an integer.
           * Read-only
       
       - manufacturer
@@ -76,10 +77,9 @@ class Phone(Entity):
       
       - send_limit (int)
           * Maximum number of SMS messages per hour that can be sent by this Android phone. To
-              increase this limit, install additional SMS expansion packs in the Telerivet app. (only
-              present for Android phones)
+              increase this limit, install additional SMS expansion packs in the Telerivet app.
+              (only present for Android phones)
           * Read-only
-      
     """
 
     def queryMessages(self, **options):
@@ -147,7 +147,6 @@ class Phone(Entity):
     def save(self):
         """
         Saves any fields or custom variables that have changed for this phone.
-        
         """
         super(Phone, self).save()
 

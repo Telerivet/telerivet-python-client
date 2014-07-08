@@ -1,13 +1,13 @@
 
 from .entity import Entity
-        
+
 class Project(Entity):
     """
     Represents a Telerivet project.
     
-    Provides methods for sending and scheduling messages, as well as accessing,
-    creating and updating a variety of entities, including contacts, messages, scheduled messages,
-    groups, labels, phones, services, and data tables.
+    Provides methods for sending and scheduling messages, as well as
+    accessing, creating and updating a variety of entities, including contacts, messages,
+    scheduled messages, groups, labels, phones, services, and data tables.
     
     Fields:
     
@@ -27,7 +27,6 @@ class Project(Entity):
       - vars (dict)
           * Custom variables stored for this project
           * Updatable via API
-      
     """
 
     def sendMessage(self, **options):
@@ -60,7 +59,8 @@ class Project(Entity):
                 * POST parameter 'secret' passed to status_url
             
             - is_template (bool)
-                * Set to true to evaluate variables like [[contact.name]] in message content
+                * Set to true to evaluate variables like [[contact.name]] in message content. [(See
+                    available variables)](#variables)
                 * Default: false
             
             - label_ids (array)
@@ -124,7 +124,8 @@ class Project(Entity):
                     set)
             
             - is_template (bool)
-                * Set to true to evaluate variables like [[contact.name]] in message content
+                * Set to true to evaluate variables like [[contact.name]] in message content [(See
+                    available variables)](#variables)
                 * Default: false
             
             - vars (dict)
@@ -134,7 +135,6 @@ class Project(Entity):
             (associative array)
               - count_queued (int)
                   * Number of messages queued to send
-              
         """
         return self._api.doRequest("POST", self.getBaseApiPath() + "/messages/send_batch", options)
 
@@ -303,7 +303,20 @@ class Project(Entity):
         """
         Retrieves the contact with the given ID.
         
-        Note: This does not make any API requests until you access a property of the Contact.
+        Arguments:
+          - id
+              * ID of the contact
+              * Required
+          
+        Returns:
+            Contact
+        """
+        from .contact import Contact
+        return Contact(self._api, self._api.doRequest("GET", self.getBaseApiPath() + "/contacts/%s" % (id)))
+
+    def initContactById(self, id):
+        """
+        Initializes the Telerivet contact with the given ID without making an API request.
         
         Arguments:
           - id
@@ -366,7 +379,20 @@ class Project(Entity):
         """
         Retrieves the phone with the given ID.
         
-        Note: This does not make any API requests until you access a property of the Phone.
+        Arguments:
+          - id
+              * ID of the phone - see <https://telerivet.com/dashboard/api>
+              * Required
+          
+        Returns:
+            Phone
+        """
+        from .phone import Phone
+        return Phone(self._api, self._api.doRequest("GET", self.getBaseApiPath() + "/phones/%s" % (id)))
+
+    def initPhoneById(self, id):
+        """
+        Initializes the phone with the given ID without making an API request.
         
         Arguments:
           - id
@@ -445,7 +471,20 @@ class Project(Entity):
         """
         Retrieves the message with the given ID.
         
-        Note: This does not make any API requests until you access a property of the Message.
+        Arguments:
+          - id
+              * ID of the message
+              * Required
+          
+        Returns:
+            Message
+        """
+        from .message import Message
+        return Message(self._api, self._api.doRequest("GET", self.getBaseApiPath() + "/messages/%s" % (id)))
+
+    def initMessageById(self, id):
+        """
+        Initializes the Telerivet message with the given ID without making an API request.
         
         Arguments:
           - id
@@ -512,7 +551,20 @@ class Project(Entity):
         """
         Retrieves the group with the given ID.
         
-        Note: This does not make any API requests until you access a property of the Group.
+        Arguments:
+          - id
+              * ID of the group
+              * Required
+          
+        Returns:
+            Group
+        """
+        from .group import Group
+        return Group(self._api, self._api.doRequest("GET", self.getBaseApiPath() + "/groups/%s" % (id)))
+
+    def initGroupById(self, id):
+        """
+        Initializes the group with the given ID without making an API request.
         
         Arguments:
           - id
@@ -579,10 +631,24 @@ class Project(Entity):
         """
         Retrieves the label with the given ID.
         
-        Note: This does not make any API requests until you access a property of the Label.
+        Arguments:
+          - id
+              * ID of the label
+              * Required
+          
+        Returns:
+            Label
+        """
+        from .label import Label
+        return Label(self._api, self._api.doRequest("GET", self.getBaseApiPath() + "/labels/%s" % (id)))
+
+    def initLabelById(self, id):
+        """
+        Initializes the label with the given ID without making an API request.
         
         Arguments:
-          - id (ID of the label)
+          - id
+              * ID of the label
               * Required
           
         Returns:
@@ -645,10 +711,24 @@ class Project(Entity):
         """
         Retrieves the data table with the given ID.
         
-        Note: This does not make any API requests until you access a property of the DataTable.
+        Arguments:
+          - id
+              * ID of the data table
+              * Required
+          
+        Returns:
+            DataTable
+        """
+        from .datatable import DataTable
+        return DataTable(self._api, self._api.doRequest("GET", self.getBaseApiPath() + "/tables/%s" % (id)))
+
+    def initDataTableById(self, id):
+        """
+        Initializes the data table with the given ID without making an API request.
         
         Arguments:
-          - id (ID of the data table)
+          - id
+              * ID of the data table
               * Required
           
         Returns:
@@ -704,11 +784,24 @@ class Project(Entity):
         """
         Retrieves the scheduled message with the given ID.
         
-        Note: This does not make any API requests until you access a property of the
-        ScheduledMessage.
+        Arguments:
+          - id
+              * ID of the scheduled message
+              * Required
+          
+        Returns:
+            ScheduledMessage
+        """
+        from .scheduledmessage import ScheduledMessage
+        return ScheduledMessage(self._api, self._api.doRequest("GET", self.getBaseApiPath() + "/scheduled/%s" % (id)))
+
+    def initScheduledMessageById(self, id):
+        """
+        Initializes the scheduled message with the given ID without making an API request.
         
         Arguments:
-          - id (ID of the scheduled message)
+          - id
+              * ID of the scheduled message
               * Required
           
         Returns:
@@ -763,10 +856,24 @@ class Project(Entity):
         """
         Retrieves the service with the given ID.
         
-        Note: This does not make any API requests until you access a property of the Service.
+        Arguments:
+          - id
+              * ID of the service
+              * Required
+          
+        Returns:
+            Service
+        """
+        from .service import Service
+        return Service(self._api, self._api.doRequest("GET", self.getBaseApiPath() + "/services/%s" % (id)))
+
+    def initServiceById(self, id):
+        """
+        Initializes the service with the given ID without making an API request.
         
         Arguments:
-          - id (ID of the service)
+          - id
+              * ID of the service
               * Required
           
         Returns:
@@ -832,8 +939,20 @@ class Project(Entity):
         """
         Retrieves the mobile money receipt with the given ID.
         
-        Note: This does not make any API requests until you access a property of the
-        MobileMoneyReceipt.
+        Arguments:
+          - id
+              * ID of the mobile money receipt
+              * Required
+          
+        Returns:
+            MobileMoneyReceipt
+        """
+        from .mobilemoneyreceipt import MobileMoneyReceipt
+        return MobileMoneyReceipt(self._api, self._api.doRequest("GET", self.getBaseApiPath() + "/receipts/%s" % (id)))
+
+    def initReceiptById(self, id):
+        """
+        Initializes the mobile money receipt with the given ID without making an API request.
         
         Arguments:
           - id
@@ -846,10 +965,74 @@ class Project(Entity):
         from .mobilemoneyreceipt import MobileMoneyReceipt
         return MobileMoneyReceipt(self._api, {'project_id': self.id, 'id': id}, False)
 
+    def queryRoutes(self, **options):
+        """
+        Queries custom routes that can be used to send messages (not including Phones).
+        
+        Arguments:
+            
+            - name
+                * Filter routes by name
+                * Allowed modifiers: name[ne], name[prefix], name[not_prefix], name[gte], name[gt],
+                    name[lt], name[lte]
+            
+            - sort
+                * Sort the results based on a field
+                * Allowed values: default, name
+                * Default: default
+            
+            - sort_dir
+                * Sort the results in ascending or descending order
+                * Allowed values: asc, desc
+                * Default: asc
+            
+            - page_size (int)
+                * Number of results returned per page (max 200)
+                * Default: 50
+            
+            - offset (int)
+                * Number of items to skip from beginning of result set
+                * Default: 0
+          
+        Returns:
+            APICursor (of Route)
+        """
+        from .route import Route
+        return self._api.newApiCursor(Route, self.getBaseApiPath() + "/routes", options)
+
+    def getRouteById(self, id):
+        """
+        Gets a custom route by ID
+        
+        Arguments:
+          - id
+              * ID of the route
+              * Required
+          
+        Returns:
+            Route
+        """
+        from .route import Route
+        return Route(self._api, self._api.doRequest("GET", self.getBaseApiPath() + "/routes/%s" % (id)))
+
+    def initRouteById(self, id):
+        """
+        Initializes a custom route by ID without making an API request.
+        
+        Arguments:
+          - id
+              * ID of the route
+              * Required
+          
+        Returns:
+            Route
+        """
+        from .route import Route
+        return Route(self._api, {'project_id': self.id, 'id': id}, False)
+
     def save(self):
         """
         Saves any fields or custom variables that have changed for the project.
-        
         """
         super(Project, self).save()
 

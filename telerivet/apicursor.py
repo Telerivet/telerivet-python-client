@@ -3,9 +3,8 @@ class APICursor:
     An easy-to-use interface for interacting with API methods that return collections of objects
     that may be split into multiple pages of results.
     
-    Using the APICursor, you can easily iterate over query results without having to
-    manually fetch each page of results.
-    
+    Using the APICursor, you can easily iterate over query results without
+    having to manually fetch each page of results.
     """
 
     def __init__(self, api, item_cls, path, params = None):        

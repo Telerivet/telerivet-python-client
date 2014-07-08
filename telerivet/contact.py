@@ -1,6 +1,6 @@
 from .entity import Entity
 
-class Contact(Entity):    
+class Contact(Entity):
     """
     Fields:
     
@@ -21,13 +21,13 @@ class Contact(Entity):
           * Read-only
       
       - last_message_time (UNIX timestamp)
-          * Last time the contact sent or received a message (null if no messages have been sent or
-              received)
+          * Last time the contact sent or received a message (null if no messages have been sent
+              or received)
           * Read-only
       
       - last_message_id
-          * ID of the last message sent or received by this contact (null if no messages have been
-              sent or received)
+          * ID of the last message sent or received by this contact (null if no messages have
+              been sent or received)
           * Read-only
       
       - default_route_id
@@ -46,7 +46,6 @@ class Contact(Entity):
       - project_id
           * ID of the project this contact belongs to
           * Read-only
-      
     """
 
     def isInGroup(self, group):
@@ -60,10 +59,9 @@ class Contact(Entity):
         Returns:
             bool
         """
-    
-        self._loadData()
+        self.load()
         return group.id in self._group_ids_set
-      
+
     def addToGroup(self, group):
         """
         Adds this contact to a group.
@@ -71,12 +69,11 @@ class Contact(Entity):
         Arguments:
           - group (Group)
               * Required
-          
         """
-        
+
         self._api.doRequest("PUT", group.getBaseApiPath() + "/contacts/" + self.id);
         self._group_ids_set[group.id] = True
-    
+
     def removeFromGroup(self, group):
         """
         Removes this contact from a group.
@@ -84,9 +81,8 @@ class Contact(Entity):
         Arguments:
           - group (Group)
               * Required
-          
         """
-    
+
         self._api.doRequest("DELETE", group.getBaseApiPath() + "/contacts/" + self.id)
         if group.id in self._group_ids_set:
             del self._group_ids_set[group.id]
@@ -316,26 +312,22 @@ class Contact(Entity):
     def save(self):
         """
         Saves any fields or custom variables that have changed for this contact.
-        
         """
         super(Contact, self).save()
 
     def delete(self):
         """
         Deletes this contact.
-        
         """
         self._api.doRequest("DELETE", self.getBaseApiPath())
 
     def getBaseApiPath(self):
         return "/projects/%(project_id)s/contacts/%(id)s" % {'project_id': self.project_id, 'id': self.id} 
-    
-    def _setData(self, data):    
+    def _setData(self, data):
         super(Contact, self)._setData(data)
-        
+
         self._group_ids_set = {}
-        
+
         if 'group_ids' in data:
-            for group_id in data['group_ids']:            
+            for group_id in data['group_ids']:
                 self._group_ids_set[group_id] = True
-    

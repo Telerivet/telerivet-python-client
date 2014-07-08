@@ -11,8 +11,8 @@ class Message(Entity):
           * Read-only
       
       - direction
-          * Direction of the message: incoming messages are sent from one of your contacts to your
-              phone; outgoing messages are sent from your phone to one of your contacts
+          * Direction of the message: incoming messages are sent from one of your contacts to
+              your phone; outgoing messages are sent from your phone to one of your contacts
           * Allowed values: incoming, outgoing
           * Read-only
       
@@ -37,18 +37,18 @@ class Message(Entity):
           * Read-only
       
       - time_sent (UNIX timestamp)
-          * The time that the message was reported to have been sent (null for incoming messages and
-              messages that have not yet been sent)
+          * The time that the message was reported to have been sent (null for incoming messages
+              and messages that have not yet been sent)
           * Read-only
       
       - from_number (string)
-          * The phone number that the message originated from (your number for outgoing messages,
-              the contact's number for incoming messages)
+          * The phone number that the message originated from (your number for outgoing
+              messages, the contact's number for incoming messages)
           * Read-only
       
       - to_number (string)
-          * The phone number that the message was sent to (your number for incoming messages, the
-              contact's number for outgoing messages)
+          * The phone number that the message was sent to (your number for incoming messages,
+              the contact's number for outgoing messages)
           * Read-only
       
       - content (string)
@@ -72,38 +72,31 @@ class Message(Entity):
           * Custom variables stored for this message
           * Updatable via API
       
-      - mms_parts (array)
-          * List of MMS parts for this message (null for non-MMS messages).
-              Only included when retrieving an individual message, not when
-              querying a list of messages.
-              
-              Each MMS part in the list has the following properties:
-              
-              - cid: MMS content-id
-              - type: MIME type
-              - filename: original filename
-              - size (int): number of bytes
-              - url: URL where the content for this part is stored (secret but
-              publicly accessible, so you could link/embed it in a web page without having to re-host it
-              yourself)
-          * Read-only
-      
       - error_message
-          * A description of the error encountered while sending a message. (This field is omitted
-              from the API response if there is no error message.)
+          * A description of the error encountered while sending a message. (This field is
+              omitted from the API response if there is no error message.)
           * Updatable via API
       
       - external_id
-          * The ID of this message from an external SMS gateway provider (e.g. Twilio or Nexmo), if
-              available.
+          * The ID of this message from an external SMS gateway provider (e.g. Twilio or Nexmo),
+              if available.
           * Read-only
       
-      - price
+      - price (number)
           * The price of this message, if known. By convention, message prices are negative.
           * Read-only
       
       - price_currency
           * The currency of the message price, if applicable.
+          * Read-only
+      
+      - mms_parts (array)
+          * A list of parts in the MMS message, the same as returned by the
+              [getMMSParts](#Message.getMMSParts) method.
+              
+              Note: This property is only present when retrieving an individual
+              MMS message by ID, not when querying a list of messages. In other cases, use
+              [getMMSParts](#Message.getMMSParts).
           * Read-only
       
       - phone_id (string, max 34 characters)
@@ -117,7 +110,6 @@ class Message(Entity):
       - project_id
           * ID of the project this contact belongs to
           * Read-only
-      
     """
 
     def hasLabel(self, label):
@@ -132,7 +124,7 @@ class Message(Entity):
             bool
         """
     
-        self._loadData()
+        self.load()
         return label.id in self._label_ids_set
       
     def addLabel(self, label):
@@ -142,7 +134,6 @@ class Message(Entity):
         Arguments:
           - label (Label)
               * Required
-          
         """
         
         self._api.doRequest("PUT", label.getBaseApiPath() + "/messages/" + self.id);
@@ -155,7 +146,6 @@ class Message(Entity):
         Arguments:
           - label (Label)
               * Required
-          
         """
     
         self._api.doRequest("DELETE", label.getBaseApiPath() + "/messages/" + self.id)
@@ -165,7 +155,6 @@ class Message(Entity):
     def delete(self):    
         """
         Deletes this message.
-        
         """
         
         self._api.doRequest("DELETE", self.getBaseApiPath())
@@ -173,10 +162,29 @@ class Message(Entity):
     #def getBaseApiPath(self):
     #    return "/projects/" + self.project_id + "/messages/" + self.id
         
+    def getMMSParts(self):
+        """
+        Retrieves a list of MMS parts for this message (empty for non-MMS messages).
+        
+        Each MMS part in the list is an object with the following
+        properties:
+        
+        - cid: MMS content-id
+        - type: MIME type
+        - filename: original filename
+        - size (int): number of bytes
+        - url: URL where the content for this part is stored (secret but
+        publicly accessible, so you could link/embed it in a web page without having to re-host it
+        yourself)
+        
+        Returns:
+            array
+        """
+        return self._api.doRequest("GET", self.getBaseApiPath() + "/mms_parts")
+
     def save(self):
         """
         Saves any fields that have changed for this message.
-        
         """
         super(Message, self).save()
 

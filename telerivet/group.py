@@ -30,7 +30,6 @@ class Group(Entity):
       - project_id
           * ID of the project this group belongs to
           * Read-only
-      
     """
 
     def queryContacts(self, **options):
@@ -135,14 +134,12 @@ class Group(Entity):
     def save(self):
         """
         Saves any fields that have changed for this group.
-        
         """
         super(Group, self).save()
 
     def delete(self):
         """
         Deletes this group (Note: no contacts are deleted.)
-        
         """
         self._api.doRequest("DELETE", self.getBaseApiPath())
 

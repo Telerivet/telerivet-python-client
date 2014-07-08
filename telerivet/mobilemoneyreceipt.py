@@ -57,8 +57,8 @@ class MobileMoneyReceipt(Entity):
           * Read-only
       
       - other_tx_id
-          * The other transaction ID listed in the receipt (e.g. the transaction ID for a reversed
-              transaction)
+          * The other transaction ID listed in the receipt (e.g. the transaction ID for a
+              reversed transaction)
           * Read-only
       
       - content
@@ -74,10 +74,10 @@ class MobileMoneyReceipt(Entity):
           * Updatable via API
       
       - contact_id
-          * ID of the contact associated with the name/phone number on the receipt. Note that some
-              mobile money systems do not provide the other person's phone number, so it's possible
-              Telerivet may not automatically assign a contact_id, or may assign it to a different
-              contact with the same name.
+          * ID of the contact associated with the name/phone number on the receipt. Note that
+              some mobile money systems do not provide the other person's phone number, so it's
+              possible Telerivet may not automatically assign a contact_id, or may assign it to a
+              different contact with the same name.
           * Updatable via API
       
       - phone_id
@@ -91,20 +91,17 @@ class MobileMoneyReceipt(Entity):
       - project_id
           * ID of the project this receipt belongs to
           * Read-only
-      
     """
 
     def save(self):
         """
         Saves any fields or custom variables that have changed for this mobile money receipt.
-        
         """
         super(MobileMoneyReceipt, self).save()
 
     def delete(self):
         """
         Deletes this receipt.
-        
         """
         self._api.doRequest("DELETE", self.getBaseApiPath())
 

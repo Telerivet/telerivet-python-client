@@ -5,10 +5,13 @@ class DataTable(Entity):
     """
     Represents a custom data table that can store arbitrary rows.
     
-    For example, poll services use data tables to store a row for each response.
+    For example, poll services use data tables to store a row for each
+    response.
     
-    It is currently only possible to create new data tables via the web UI; however,
-    after a table is created, you can add/update/delete rows via the API.
+    DataTables are schemaless -- each row simply stores custom variables. Each
+    variable name is equivalent to a different "column" of the data table.
+    Telerivet refers to these variables/columns as "fields", and automatically
+    creates a new field for each variable name used in a row of the table.
     
     Fields:
     
@@ -31,7 +34,6 @@ class DataTable(Entity):
       - project_id
           * ID of the project this data table belongs to
           * Read-only
-      
     """
 
     def queryRows(self, **options):
@@ -99,10 +101,24 @@ class DataTable(Entity):
         """
         Retrieves the row in the given table with the given ID.
         
-        Note: This does not make any API requests until you access a property of the DataRow.
+        Arguments:
+          - id
+              * ID of the row
+              * Required
+          
+        Returns:
+            DataRow
+        """
+        from .datarow import DataRow
+        return DataRow(self._api, self._api.doRequest("GET", self.getBaseApiPath() + "/rows/%s" % (id)))
+
+    def initRowById(self, id):
+        """
+        Initializes the row in the given table with the given ID, without making an API request.
         
         Arguments:
-          - id (ID of the row)
+          - id
+              * ID of the row
               * Required
           
         Returns:
@@ -142,14 +158,12 @@ class DataTable(Entity):
     def save(self):
         """
         Saves any fields that have changed for this data table.
-        
         """
         super(DataTable, self).save()
 
     def delete(self):
         """
         Permanently deletes the given data table, including all its rows
-        
         """
         self._api.doRequest("DELETE", self.getBaseApiPath())
 

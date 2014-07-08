@@ -1,17 +1,60 @@
 
 class API:
     """
+    
     """
     
-    client_version = '1.0.2'
+    client_version = '1.1.0'
     
+    """
+        Initializes a client handle to the Telerivet REST API.
+        
+        Each API key is associated with a Telerivet user account, and all
+        API actions are performed with that user's permissions. If you want to restrict the
+        permissions of an API client, simply add another user account at
+        <https://telerivet.com/dashboard/users> with the desired permissions.
+        
+        Arguments:
+          - api_key (Your Telerivet API key; see <https://telerivet.com/dashboard/api>)
+              * Required
+    """
     def __init__(self, api_key, api_url = 'https://api.telerivet.com/v1'):
         self.api_key = api_key
         self.api_url = api_url
         self.num_requests = 0
         self.session = None
     
-    def queryProjects(self, **options):    
+    def getProjectById(self, id):
+        """
+        Retrieves the Telerivet project with the given ID.
+        
+        Arguments:
+          - id
+              * ID of the project -- see <https://telerivet.com/dashboard/api>
+              * Required
+          
+        Returns:
+            Project
+        """
+        from .project import Project
+        return Project(self, self.doRequest("GET", self.getBaseApiPath() + "/projects/%s" % (id)))
+
+    def initProjectById(self, id):
+        """
+        Initializes the Telerivet project with the given ID without making an API request.
+        
+        Arguments:
+          - id
+              * ID of the project -- see <https://telerivet.com/dashboard/api>
+              * Required
+          
+        Returns:
+            Project
+        """
+        from .project import Project
+        return Project(self, {'id': id}, False)
+
+    def queryProjects(self, **options):
         """
         Queries projects accessible to the current user account.
         
@@ -44,23 +87,11 @@ class API:
             APICursor (of Project)
         """
         from .project import Project
-        return self.newApiCursor(Project, '/projects', options);
+        return self.newApiCursor(Project, self.getBaseApiPath() + "/projects", options)
+
+    def getBaseApiPath(self):
+        return "" 
     
-    def getProjectById(self, id):
-        """
-        Retrieves the Telerivet project with the given ID.
-        
-        Arguments:
-          - id
-              * ID of the project -- see <https://telerivet.com/dashboard/api>
-              * Required
-          
-        Returns:
-            Project
-        """
-        from .project import Project
-        return Project(self, {'id':id}, False)
-        
     def encodeParamsRec(self, paramName, value, res):    
         if value is None:
             return

@@ -26,7 +26,6 @@ class Label(Entity):
       - project_id
           * ID of the project this label belongs to
           * Read-only
-      
     """
 
     def queryMessages(self, **options):
@@ -94,14 +93,12 @@ class Label(Entity):
     def save(self):
         """
         Saves any fields that have changed for the label.
-        
         """
         super(Label, self).save()
 
     def delete(self):
         """
         Deletes the given label (Note: no messages are deleted.)
-        
         """
         self._api.doRequest("DELETE", self.getBaseApiPath())
 

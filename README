@@ -45,9 +45,9 @@ import telerivet
 API_KEY = 'YOUR_API_KEY'  # from https://telerivet.com/dashboard/api
 PROJECT_ID = 'YOUR_PROJECT_ID'
 
-tr = telerivet.API(API_KEY, 'http://localhost:4001/v1')
+tr = telerivet.API(API_KEY)
 
-project = tr.getProjectById(PROJECT_ID)
+project = tr.initProjectById(PROJECT_ID)
 
 # Send a SMS message
 project.sendMessage(
