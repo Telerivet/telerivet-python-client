@@ -1,6 +1,6 @@
 Python client library for Telerivet REST API
 
-http://telerivet.com
+http://telerivet.com/api
 
 Overview:
 ---------
@@ -15,8 +15,10 @@ You can use it to:
 - control automated services
 - much more
 
-All API methods are fully documented in the comments of the Python source files;
-to learn what functionality is available, start with telerivet/__init__.py, 
+All API methods are fully documented at http://telerivet.com/api/rest/python ,
+as well as in the comments of the Python source files.
+
+To learn what functionality is available, start with telerivet/__init__.py, 
 telerivet/project.py, and telerivet/apicursor.py .
 
 System Requirements:
@@ -42,7 +44,7 @@ from __future__ import print_function # python 2/3 compatibility for example cod
 
 import telerivet
    
-API_KEY = 'YOUR_API_KEY'  # from https://telerivet.com/dashboard/api
+API_KEY = 'YOUR_API_KEY'  # from https://telerivet.com/api/keys
 PROJECT_ID = 'YOUR_PROJECT_ID'
 
 tr = telerivet.API(API_KEY)
