@@ -188,6 +188,19 @@ class Message(Entity):
         """
         super(Message, self).save()
 
+    def resend(self):
+        """
+        Resends a message, for example if the message failed to send or if it was not delivered. If
+        the message was originally in the queued, retrying, failed, or cancelled states, then
+        Telerivet will return the same message object. Otherwise, Telerivet will create and return a
+        new message object.
+        
+        Returns:
+            Message
+        """
+        from .message import Message
+        return Message(self._api, self._api.doRequest("POST", self.getBaseApiPath() + "/resend"))
+
     def getBaseApiPath(self):
         return "/projects/%(project_id)s/messages/%(id)s" % {'project_id': self.project_id, 'id': self.id} 
     
