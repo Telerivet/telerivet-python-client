@@ -201,6 +201,18 @@ class Message(Entity):
         from .message import Message
         return Message(self._api, self._api.doRequest("POST", self.getBaseApiPath() + "/resend"))
 
+    def cancel(self):
+        """
+        Cancels sending a message that has not yet been sent. Returns the updated message object.
+        Only valid for outgoing messages that are currently in the queued, retrying, or cancelled
+        states. For other messages, the API will return an error with the code 'not_cancellable'.
+        
+        Returns:
+            Message
+        """
+        from .message import Message
+        return Message(self._api, self._api.doRequest("POST", self.getBaseApiPath() + "/cancel"))
+
     def getBaseApiPath(self):
         return "/projects/%(project_id)s/messages/%(id)s" % {'project_id': self.project_id, 'id': self.id} 
     

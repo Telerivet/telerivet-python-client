@@ -69,6 +69,12 @@ class Service(Entity):
           * ID of the group containing contacts that have completed an interaction with this
               service (currently only used for polls)
           * Read-only
+      
+      - questions (array)
+          * Array of objects describing each question in a poll (only used for polls). Each
+              object has the properties "id" (the question ID), "content" (the text of the
+              question), and "question_type" (either "multiple_choice", "missed_call", or "open").
+          * Read-only
     """
 
     def invoke(self, **options):
