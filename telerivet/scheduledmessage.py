@@ -38,7 +38,7 @@ class ScheduledMessage(Entity):
           * Read-only
       
       - route_id
-          * ID of the phone or route to the message will be sent from
+          * ID of the phone or route the message will be sent from
           * Read-only
       
       - message_type

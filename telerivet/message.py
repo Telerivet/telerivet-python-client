@@ -107,6 +107,10 @@ class Message(Entity):
           * ID of the contact that sent or received the message
           * Read-only
       
+      - route_id (string, max 34 characters)
+          * ID of the route that sent the message (if applicable)
+          * Read-only
+      
       - project_id
           * ID of the project this contact belongs to
           * Read-only
@@ -188,18 +192,23 @@ class Message(Entity):
         """
         super(Message, self).save()
 
-    def resend(self):
+    def resend(self, **options):
         """
         Resends a message, for example if the message failed to send or if it was not delivered. If
         the message was originally in the queued, retrying, failed, or cancelled states, then
         Telerivet will return the same message object. Otherwise, Telerivet will create and return a
         new message object.
         
+        Arguments:
+            
+            - route_id
+                * ID of the phone or route to send the message from
+          
         Returns:
             Message
         """
         from .message import Message
-        return Message(self._api, self._api.doRequest("POST", self.getBaseApiPath() + "/resend"))
+        return Message(self._api, self._api.doRequest("POST", self.getBaseApiPath() + "/resend", options))
 
     def cancel(self):
         """
