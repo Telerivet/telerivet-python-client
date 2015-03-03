@@ -207,6 +207,53 @@ class Project(Entity):
         from .scheduledmessage import ScheduledMessage
         return ScheduledMessage(self._api, self._api.doRequest("POST", self.getBaseApiPath() + "/scheduled", options))
 
+    def receiveMessage(self, **options):
+        """
+        Add an incoming message to Telerivet. Acts the same as if the message was received by a
+        phone. Also triggers any automated services that apply to the message.
+        
+        Arguments:
+              * Required
+            
+            - content
+                * Content of the incoming message
+                * Required unless message_type is call
+            
+            - message_type
+                * Type of message
+                * Allowed values: sms, call
+                * Default: sms
+            
+            - from_number
+                * Phone number that sent the incoming message
+                * Required
+            
+            - phone_id
+                * ID of the phone that received the message
+                * Required
+            
+            - to_number
+                * Phone number that the incoming message was sent to
+                * Default: phone number of the phone that received the message
+            
+            - simulated (bool)
+                * If true, Telerivet will not send automated replies to actual phones
+            
+            - starred (bool)
+                * True if this message should be starred
+            
+            - label_ids (array)
+                * Array of IDs of labels to add to this message (maximum 5)
+            
+            - vars (dict)
+                * Custom variables to set for this message
+          
+        Returns:
+            Message
+        """
+        from .message import Message
+        return Message(self._api, self._api.doRequest("POST", self.getBaseApiPath() + "/messages/receive", options))
+
     def getOrCreateContact(self, **options):
         """
         Retrieves OR creates and possibly updates a contact by name or phone number.
