@@ -20,6 +20,10 @@ class Contact(Entity):
           * Time the contact was added in Telerivet
           * Read-only
       
+      - send_blocked (bool)
+          * True if Telerivet is blocked from sending messages to this contact
+          * Updatable via API
+      
       - last_message_time (UNIX timestamp)
           * Last time the contact sent or received a message (null if no messages have been sent
               or received)
@@ -160,6 +164,9 @@ class Contact(Entity):
                 * Allowed modifiers: name[ne], name[prefix], name[not_prefix], name[gte], name[gt],
                     name[lt], name[lte]
             
+            - dynamic (bool)
+                * Filter groups by dynamic/non-dynamic
+            
             - sort
                 * Sort the results based on a field
                 * Allowed values: default, name
@@ -237,12 +244,6 @@ class Contact(Entity):
             - time_created (UNIX timestamp)
                 * Filter data rows by the time they were created
                 * Allowed modifiers: time_created[ne], time_created[min], time_created[max]
-            
-            - vars (dict)
-                * Filter data rows by value of a custom variable (e.g. vars[q1], vars[foo], etc.)
-                * Allowed modifiers: vars[foo][exists], vars[foo][ne], vars[foo][prefix],
-                    vars[foo][not_prefix], vars[foo][gte], vars[foo][gt], vars[foo][lt], vars[foo][lte],
-                    vars[foo][min], vars[foo][max]
             
             - sort
                 * Sort the results based on a field

@@ -58,6 +58,11 @@ class Phone(Entity):
               the last time it connected to Telerivet (only present for Android phones)
           * Read-only
       
+      - internet_type
+          * String describing the current type of internet connectivity for an Android phone,
+              for example WIFI or MOBILE (only present for Android phones)
+          * Read-only
+      
       - app_version
           * Currently installed version of Telerivet Android app (only present for Android
               phones)

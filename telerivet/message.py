@@ -90,6 +90,15 @@ class Message(Entity):
           * The currency of the message price, if applicable.
           * Read-only
       
+      - duration (number)
+          * The duration of the call in seconds, if known, or -1 if the call was not answered.
+          * Read-only
+      
+      - ring_time (number)
+          * The length of time the call rang in seconds before being answered or hung up, if
+              known.
+          * Read-only
+      
       - mms_parts (array)
           * A list of parts in the MMS message, the same as returned by the
               [getMMSParts](#Message.getMMSParts) method.

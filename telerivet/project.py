@@ -258,28 +258,47 @@ class Project(Entity):
         """
         Retrieves OR creates and possibly updates a contact by name or phone number.
         
-        If a phone number is provided, Telerivet will search for an existing
-        contact with that phone number (including suffix matches to allow finding contacts with
-        phone numbers in a different format).
-        
-        If a phone number is not provided but a name is provided, Telerivet
-        will search for a contact with that exact name (case insensitive).
+        If a phone number is provided, by default, Telerivet will search for
+        an existing contact with that phone number (including suffix matches to allow finding
+        contacts with phone numbers in a different format). If a phone number is not provided but a
+        name is provided, Telerivet will search for a contact with that exact name (case
+        insensitive). This behavior can be modified by setting the lookup_key parameter to look up a
+        contact by another field, including a custom variable.
         
         If no existing contact is found, a new contact will be created.
         
         Then that contact will be updated with any parameters provided
-        (name, phone_number, and vars).
+        (name, phone_number, vars, default\_route\_id, send\_blocked, add\_group\_ids,
+        remove\_group\_ids).
         
         Arguments:
-              * Required
             
             - name
                 * Name of the contact
-                * Required if phone_number not set
             
             - phone_number
                 * Phone number of the contact
-                * Required if name not set
+            
+            - lookup_key
+                * The field used to search for a matching contact, or 'none' to always create a new
+                    contact. To search by a custom variable, precede the variable name with 'vars.'.
+                * Allowed values: phone_number, name, id, vars.variable_name, none
+                * Default: phone_number
+            
+            - send_blocked (bool)
+                * True if Telerivet is blocked from sending messages to this contact
+            
+            - default_route_id
+                * ID of the route to use by default to send messages to this contact
+            
+            - add_group_ids (array)
+                * ID of one or more groups to add this contact as a member (max 20)
+            
+            - id
+                * ID of an existing contact (only used if lookup_key is 'id')
+            
+            - remove_group_ids (array)
+                * ID of one or more groups to remove this contact as a member (max 20)
             
             - vars (dict)
                 * Custom variables and values to update on the contact
@@ -315,6 +334,9 @@ class Project(Entity):
                 * Filter contacts by last time a message was sent or received
                 * Allowed modifiers: last_message_time[exists], last_message_time[ne],
                     last_message_time[min], last_message_time[max]
+            
+            - send_blocked (bool)
+                * Filter contacts by blocked status
             
             - vars (dict)
                 * Filter contacts by value of a custom variable (e.g. vars[email], vars[foo], etc.)
@@ -554,6 +576,9 @@ class Project(Entity):
                 * Filter groups by name
                 * Allowed modifiers: name[ne], name[prefix], name[not_prefix], name[gte], name[gt],
                     name[lt], name[lte]
+            
+            - dynamic (bool)
+                * Filter groups by dynamic/non-dynamic
             
             - sort
                 * Sort the results based on a field

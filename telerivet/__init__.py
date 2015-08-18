@@ -4,7 +4,7 @@ class API:
     
     """
     
-    client_version = '1.1.4'
+    client_version = '1.1.5'
     
     """
         Initializes a client handle to the Telerivet REST API.
