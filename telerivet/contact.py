@@ -29,9 +29,29 @@ class Contact(Entity):
               or received)
           * Read-only
       
+      - last_incoming_message_time (UNIX timestamp)
+          * Last time a message was received from this contact
+          * Read-only
+      
+      - last_outgoing_message_time (UNIX timestamp)
+          * Last time a message was sent to this contact
+          * Read-only
+      
+      - message_count (int)
+          * Total number of non-deleted messages sent to or received from this contact
+          * Read-only
+      
+      - incoming_message_count (int)
+          * Number of messages received from this contact
+          * Read-only
+      
+      - outgoing_message_count (int)
+          * Number of messages sent to this contact
+          * Read-only
+      
       - last_message_id
-          * ID of the last message sent or received by this contact (null if no messages have
-              been sent or received)
+          * ID of the last message sent to or received from this contact (null if no messages
+              have been sent or received)
           * Read-only
       
       - default_route_id

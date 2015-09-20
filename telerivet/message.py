@@ -120,6 +120,10 @@ class Message(Entity):
           * ID of the route that sent the message (if applicable)
           * Read-only
       
+      - user_id (string, max 34 characters)
+          * ID of the Telerivet user who sent the message (if applicable)
+          * Read-only
+      
       - project_id
           * ID of the project this contact belongs to
           * Read-only

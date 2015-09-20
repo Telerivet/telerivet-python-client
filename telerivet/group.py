@@ -62,6 +62,28 @@ class Group(Entity):
                 * Allowed modifiers: last_message_time[exists], last_message_time[ne],
                     last_message_time[min], last_message_time[max]
             
+            - last_incoming_message_time (UNIX timestamp)
+                * Filter contacts by last time a message was received
+                * Allowed modifiers: last_incoming_message_time[exists],
+                    last_incoming_message_time[ne], last_incoming_message_time[min],
+                    last_incoming_message_time[max]
+            
+            - last_outgoing_message_time (UNIX timestamp)
+                * Filter contacts by last time a message was sent
+                * Allowed modifiers: last_outgoing_message_time[exists],
+                    last_outgoing_message_time[ne], last_outgoing_message_time[min],
+                    last_outgoing_message_time[max]
+            
+            - incoming_message_count (int)
+                * Filter contacts by number of messages received from the contact
+                * Allowed modifiers: incoming_message_count[ne], incoming_message_count[min],
+                    incoming_message_count[max]
+            
+            - outgoing_message_count (int)
+                * Filter contacts by number of messages sent to the contact
+                * Allowed modifiers: outgoing_message_count[ne], outgoing_message_count[min],
+                    outgoing_message_count[max]
+            
             - send_blocked (bool)
                 * Filter contacts by blocked status
             
