@@ -41,6 +41,11 @@ class ScheduledMessage(Entity):
           * ID of the phone or route the message will be sent from
           * Read-only
       
+      - service_id (string, max 34 characters)
+          * The service associated with this message (for voice calls, the service defines the
+              call flow)
+          * Read-only
+      
       - message_type
           * Type of scheduled message
           * Allowed values: sms, ussd

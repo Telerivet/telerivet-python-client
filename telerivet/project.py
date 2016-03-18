@@ -31,7 +31,7 @@ class Project(Entity):
 
     def sendMessage(self, **options):
         """
-        Sends one message (SMS or USSD request).
+        Sends one message (SMS, voice call, or USSD request).
         
         Arguments:
               * Required
@@ -52,6 +52,10 @@ class Project(Entity):
                 * ID of the phone or route to send the message from
                 * Default: default sender phone ID for your project
             
+            - service_id
+                * Service that defines the call flow of the voice call
+                * Required if sending voice call
+            
             - status_url
                 * Webhook callback URL to be notified when message status changes
             
@@ -68,7 +72,7 @@ class Project(Entity):
             
             - message_type
                 * Type of message to send
-                * Allowed values: sms, ussd
+                * Allowed values: sms, ussd, call
                 * Default: sms
             
             - vars (dict)
@@ -88,15 +92,15 @@ class Project(Entity):
 
     def sendMessages(self, **options):
         """
-        Sends an SMS message (optionally with mail-merge templates) to a group or a list of up to
-        500 phone numbers
+        Sends an SMS message (optionally with mail-merge templates) or voice call to a group or a
+        list of up to 500 phone numbers
         
         Arguments:
               * Required
             
             - content
                 * Content of the message to send
-                * Required
+                * Required if sending SMS message
             
             - group_id
                 * ID of the group to send the message to
@@ -110,6 +114,10 @@ class Project(Entity):
                 * ID of the phone or route to send the message from
                 * Default: default sender phone ID
             
+            - service_id
+                * Service that defines the call flow of the voice call
+                * Required if sending voice call
+            
             - status_url
                 * Webhook callback URL to be notified when message status changes
             
@@ -122,6 +130,11 @@ class Project(Entity):
             - exclude_contact_id
                 * Optionally excludes one contact from receiving the message (only when group_id is
                     set)
+            
+            - message_type
+                * Type of message to send
+                * Allowed values: sms, call
+                * Default: sms
             
             - is_template (bool)
                 * Set to true to evaluate variables like [[contact.name]] in message content [(See
@@ -149,7 +162,7 @@ class Project(Entity):
             
             - content
                 * Content of the message to schedule
-                * Required
+                * Required if sending SMS message
             
             - group_id
                 * ID of the group to send the message to
@@ -176,6 +189,10 @@ class Project(Entity):
             - route_id
                 * ID of the phone or route to send the message from
                 * Default: default sender phone ID
+            
+            - service_id
+                * Service that defines the call flow of the voice call
+                * Required if sending voice call
             
             - message_type
                 * Type of message to send

@@ -46,6 +46,9 @@ class DataTable(Entity):
                 * Filter data rows by the time they were created
                 * Allowed modifiers: time_created[ne], time_created[min], time_created[max]
             
+            - contact_id
+                * Filter data rows associated with a particular contact
+            
             - vars (dict)
                 * Filter data rows by value of a custom variable (e.g. vars[q1], vars[foo], etc.)
                 * Allowed modifiers: vars[foo][exists], vars[foo][ne], vars[foo][prefix],

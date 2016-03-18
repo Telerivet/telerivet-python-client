@@ -83,7 +83,7 @@ class Message(Entity):
           * Read-only
       
       - price (number)
-          * The price of this message, if known. By convention, message prices are negative.
+          * The price of this message, if known.
           * Read-only
       
       - price_currency
@@ -106,6 +106,11 @@ class Message(Entity):
               Note: This property is only present when retrieving an individual
               MMS message by ID, not when querying a list of messages. In other cases, use
               [getMMSParts](#Message.getMMSParts).
+          * Read-only
+      
+      - service_id (string, max 34 characters)
+          * ID of the service that handled the message (for voice calls, the service defines the
+              call flow)
           * Read-only
       
       - phone_id (string, max 34 characters)
