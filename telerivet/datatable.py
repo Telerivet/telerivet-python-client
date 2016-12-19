@@ -5,8 +5,7 @@ class DataTable(Entity):
     """
     Represents a custom data table that can store arbitrary rows.
     
-    For example, poll services use data tables to store a row for each
-    response.
+    For example, poll services use data tables to store a row for each response.
     
     DataTables are schemaless -- each row simply stores custom variables. Each
     variable name is equivalent to a different "column" of the data table.

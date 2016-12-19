@@ -60,7 +60,7 @@ class Message(Entity):
           * Updatable via API
       
       - simulated (bool)
-          * Whether this message is was simulated within Telerivet for testing (and not actually
+          * Whether this message was simulated within Telerivet for testing (and not actually
               sent to or received by a real phone)
           * Read-only
       
@@ -99,6 +99,21 @@ class Message(Entity):
               known.
           * Read-only
       
+      - audio_url
+          * For voice calls, the URL of an MP3 file to play when the contact answers the call
+          * Read-only
+      
+      - tts_lang
+          * For voice calls, the language of the text-to-speech voice
+          * Allowed values: en-US, en-GB, en-GB-WLS, en-AU, en-IN, da-DK, nl-NL, fr-FR, fr-CA,
+              de-DE, is-IS, it-IT, pl-PL, pt-BR, pt-PT, ru-RU, es-ES, es-US, sv-SE
+          * Read-only
+      
+      - tts_voice
+          * For voice calls, the text-to-speech voice
+          * Allowed values: female, male
+          * Read-only
+      
       - mms_parts (array)
           * A list of parts in the MMS message, the same as returned by the
               [getMMSParts](#Message.getMMSParts) method.
@@ -123,6 +138,10 @@ class Message(Entity):
       
       - route_id (string, max 34 characters)
           * ID of the route that sent the message (if applicable)
+          * Read-only
+      
+      - broadcast_id (string, max 34 characters)
+          * ID of the broadcast that this message is part of (if applicable)
           * Read-only
       
       - user_id (string, max 34 characters)

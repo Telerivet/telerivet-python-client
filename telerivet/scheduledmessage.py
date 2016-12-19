@@ -46,9 +46,24 @@ class ScheduledMessage(Entity):
               call flow)
           * Read-only
       
+      - audio_url
+          * For voice calls, the URL of an MP3 file to play when the contact answers the call
+          * Read-only
+      
+      - tts_lang
+          * For voice calls, the language of the text-to-speech voice
+          * Allowed values: en-US, en-GB, en-GB-WLS, en-AU, en-IN, da-DK, nl-NL, fr-FR, fr-CA,
+              de-DE, is-IS, it-IT, pl-PL, pt-BR, pt-PT, ru-RU, es-ES, es-US, sv-SE
+          * Read-only
+      
+      - tts_voice
+          * For voice calls, the text-to-speech voice
+          * Allowed values: female, male
+          * Read-only
+      
       - message_type
           * Type of scheduled message
-          * Allowed values: sms, ussd
+          * Allowed values: sms, ussd, call
           * Read-only
       
       - time_created (UNIX timestamp)
