@@ -3,9 +3,9 @@ class API:
     """
     
     """
-    
-    client_version = '1.2.0'
-    
+
+    client_version = '1.2.1'
+
     """
         Initializes a client handle to the Telerivet REST API.
         
@@ -23,7 +23,7 @@ class API:
         self.api_url = api_url
         self.num_requests = 0
         self.session = None
-    
+
     def getProjectById(self, id):
         """
         Retrieves the Telerivet project with the given ID.
@@ -91,39 +91,38 @@ class API:
 
     def getBaseApiPath(self):
         return "" 
-    
-    def encodeParamsRec(self, paramName, value, res):    
+    def encodeParamsRec(self, paramName, value, res):
         if value is None:
             return
-        
-        if isinstance(value,(list, tuple)):                        
+
+        if isinstance(value,(list, tuple)):
             for i, val in enumerate(value):
                 self.encodeParamsRec(paramName + "[" +i + "]", val, res)
-        elif isinstance(value,dict):            
-            for key, val in value.items():            
+        elif isinstance(value,dict):
+            for key, val in value.items():
                 self.encodeParamsRec(paramName + "[" + key + "]", val, res)
         elif isinstance(value,bool):
             res[paramName] = 1 if value else 0
         else:
             res[paramName] = value
-            
+
     def getUrlParams(self, params):
         res = {}
         if params is not None:
-            for key, value in params.items():        
-                self.encodeParamsRec(key, value, res)        
+            for key, value in params.items():
+                self.encodeParamsRec(key, value, res)
         return res
-        
-    def doRequest(self, method, path, params = None):       
+
+    def doRequest(self, method, path, params = None):
         import requests, os, json, sys
-        
+
         url = self.api_url + path
-        
+
         if self.session is None:
             self.session = requests.Session()
-        
+
         version_info = sys.version_info
-        
+
         headers = {
             "User-Agent": "Telerivet Python Client/%s Python/%s.%s.%s OS/%s" % (API.client_version, version_info[0], version_info[1], version_info[2], sys.platform)
         }
@@ -132,12 +131,12 @@ class API:
         if method == 'POST' or method == 'PUT':
             headers['Content-Type'] = "application/json"
             data = json.dumps(params)
-        else:        
+        else:
             query = self.getUrlParams(params)
-            
+
         self.num_requests += 1
-       
-        response = self.session.request(method, url, 
+
+        response = self.session.request(method, url,
             headers = headers,
             data = data,
             params = query,
@@ -145,39 +144,42 @@ class API:
             timeout = 60,
             verify = True
         )
-        
-        res = response.json()
+
+        try:
+            res = response.json()
+        except ValueError, e:
+            raise IOError("Unexpected response from Telerivet API (HTTP {}): {}".format(response.status_code, response.content))
 
         if "error" in res:
             error = res['error']
             error_code = error['code']
-            
+
             if error_code == 'invalid_param':
                 raise InvalidParameterException(error['message'], error['code'], error['param'])
-            elif error_code == 'not_found':                    
+            elif error_code == 'not_found':
                 raise NotFoundException(error['message'], error['code']);
             else:
-                raise APIException(error['message'], error['code'])               
+                raise APIException(error['message'], error['code'])
         else:
             return res
-   
+
     def newApiCursor(self, item_cls, path, options):
         from .apicursor import APICursor
         return APICursor(self, item_cls, path, options)
-        
+
 class TelerivetException(Exception):
     pass
-        
+
 class APIException(TelerivetException):
-    
+
     def __init__(self, message, code):
         super(APIException, self).__init__(message)
         self.code = code
-    
+
 class NotFoundException(APIException):
-    pass    
-    
+    pass
+
 class InvalidParameterException(APIException):
     def __init__(self, message, code, param):
         super(InvalidParameterException, self).__init__(message, code)
-        self.param = param                              
+        self.param = param
