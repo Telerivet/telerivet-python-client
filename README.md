@@ -40,6 +40,7 @@ python setup.py install
 Example Usage:
 --------------
 
+```python
 from __future__ import print_function # python 2/3 compatibility for example code
 
 import telerivet
@@ -50,26 +51,35 @@ PROJECT_ID = 'YOUR_PROJECT_ID'
 tr = telerivet.API(API_KEY)
 
 project = tr.initProjectById(PROJECT_ID)
+```
 
 # Send a SMS message
+
+```python
 project.sendMessage(
     to_number = '555-0001',
     content = 'Hello world!'
 )
+```
 
-# Query contacts  
+# Query contacts
+
+```python
 name_prefix = 'John';
 cursor = project.queryContacts(
     name = {'prefix': name_prefix},
-    sort = 'name'    
+    sort = 'name'
 ).limit(20)
 
 print("%d contacts matching %s:\n" % (cursor.count(), name_prefix))
 
 for contact in cursor:
     print(contact.name, contact.phone_number, contact.vars.birthdate)
+```
 
 # Import a contact
+
+```python
 contact = project.getOrCreateContact(
     name = 'John Smith',
     phone_number = '555-0001',
@@ -78,7 +88,11 @@ contact = project.getOrCreateContact(
         'network': 'Vodacom'
     }
 )
+```
 
 # Add a contact to a group    
+
+```python
 group = project.getOrCreateGroup('Subscribers')
 contact.addToGroup(group)
+```
