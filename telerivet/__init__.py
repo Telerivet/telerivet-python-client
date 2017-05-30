@@ -4,7 +4,7 @@ class API:
     
     """
 
-    client_version = '1.2.1'
+    client_version = '1.2.2'
 
     """
         Initializes a client handle to the Telerivet REST API.
@@ -147,7 +147,7 @@ class API:
 
         try:
             res = response.json()
-        except ValueError, e:
+        except ValueError as e:
             raise IOError("Unexpected response from Telerivet API (HTTP {}): {}".format(response.status_code, response.content))
 
         if "error" in res:
