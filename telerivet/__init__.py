@@ -4,7 +4,7 @@ class API:
     
     """
 
-    client_version = '1.2.2'
+    client_version = '1.3.0'
 
     """
         Initializes a client handle to the Telerivet REST API.
@@ -88,6 +88,71 @@ class API:
         """
         from .project import Project
         return self.newApiCursor(Project, self.getBaseApiPath() + "/projects", options)
+
+    def getOrganizationById(self, id):
+        """
+        Retrieves the Telerivet organization with the given ID.
+        
+        Arguments:
+          - id
+              * ID of the organization -- see <https://telerivet.com/dashboard/api>
+              * Required
+          
+        Returns:
+            Organization
+        """
+        from .organization import Organization
+        return Organization(self, self.doRequest("GET", self.getBaseApiPath() + "/organizations/%s" % (id)))
+
+    def initOrganizationById(self, id):
+        """
+        Initializes the Telerivet organization with the given ID without making an API request.
+        
+        Arguments:
+          - id
+              * ID of the organization -- see <https://telerivet.com/dashboard/api>
+              * Required
+          
+        Returns:
+            Organization
+        """
+        from .organization import Organization
+        return Organization(self, {'id': id}, False)
+
+    def queryOrganizations(self, **options):
+        """
+        Queries organizations accessible to the current user account.
+        
+        Arguments:
+            
+            - name
+                * Filter organizations by name
+                * Allowed modifiers: name[ne], name[prefix], name[not_prefix], name[gte], name[gt],
+                    name[lt], name[lte]
+            
+            - sort
+                * Sort the results based on a field
+                * Allowed values: default, name
+                * Default: default
+            
+            - sort_dir
+                * Sort the results in ascending or descending order
+                * Allowed values: asc, desc
+                * Default: asc
+            
+            - page_size (int)
+                * Number of results returned per page (max 200)
+                * Default: 50
+            
+            - offset (int)
+                * Number of items to skip from beginning of result set
+                * Default: 0
+          
+        Returns:
+            APICursor (of Organization)
+        """
+        from .organization import Organization
+        return self.newApiCursor(Organization, self.getBaseApiPath() + "/organizations", options)
 
     def getBaseApiPath(self):
         return "" 

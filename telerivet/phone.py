@@ -91,8 +91,8 @@ class Phone(Entity):
       
       - send_limit (int)
           * Maximum number of SMS messages per hour that can be sent by this Android phone. To
-              increase this limit, install additional SMS expansion packs in the Telerivet app.
-              (only present for Android phones)
+              increase this limit, install additional SMS expansion packs in the Telerivet Gateway
+              app. (only present for Android phones)
           * Read-only
     """
 

@@ -72,8 +72,9 @@ class Service(Entity):
       
       - questions (array)
           * Array of objects describing each question in a poll (only used for polls). Each
-              object has the properties "id" (the question ID), "content" (the text of the
-              question), and "question_type" (either "multiple_choice", "missed_call", or "open").
+              object has the properties `"id"` (the question ID), `"content"` (the text of the
+              question), and `"question_type"` (either `"multiple_choice"`, `"missed_call"`, or
+              `"open"`).
           * Read-only
     """
 
@@ -82,13 +83,13 @@ class Service(Entity):
         Manually invoke this service in a particular context.
         
         For example, to send a poll to a particular contact (or resend the
-        current question), you can invoke the poll service with context=contact, and contact_id as
+        current question), you can invoke the poll service with context=contact, and `contact_id` as
         the ID of the contact to send the poll to.
         
         Or, to manually apply a service for an incoming message, you can
-        invoke the service with context=message, event=incoming\_message, and message_id as the ID
-        of the incoming message. (This is normally not necessary, but could be used if you want to
-        override Telerivet's standard priority-ordering of services.)
+        invoke the service with `context`=`message`, `event`=`incoming_message`, and `message_id` as
+        the ID of the incoming message. (This is normally not necessary, but could be used if you
+        want to override Telerivet's standard priority-ordering of services.)
         
         Arguments:
               * Required
