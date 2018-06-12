@@ -5,6 +5,10 @@ class Phone(Entity):
     """
     Represents a phone or gateway that you use to send/receive messages via Telerivet.
     
+    Basic Routes were formerly referred to as "Phones" within Telerivet. API
+    methods, parameters, and properties related to Basic Routes continue to use the term "Phone"
+    to maintain backwards compatibility.
+    
     Fields:
     
       - id (string, max 34 characters)
@@ -16,11 +20,11 @@ class Phone(Entity):
           * Updatable via API
       
       - phone_number (string)
-          * Phone number of the phone
+          * Phone number or sender ID
           * Updatable via API
       
       - phone_type
-          * Type of this phone/gateway (e.g. android, twilio, nexmo, etc)
+          * Type of this phone/route (e.g. android, twilio, nexmo, etc)
           * Read-only
       
       - country
@@ -135,7 +139,10 @@ class Phone(Entity):
                 * ID of the contact who sent/received the message
             
             - phone_id
-                * ID of the phone that sent/received the message
+                * ID of the phone (basic route) that sent/received the message
+            
+            - broadcast_id
+                * ID of the broadcast containing the message
             
             - sort
                 * Sort the results based on a field

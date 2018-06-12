@@ -3,9 +3,15 @@ from .entity import Entity
 
 class Route(Entity):
     """
-    Represents a custom route that can be used to send messages via one or more Phones.
+    Represents a custom route that can be used to send messages via one or more basic routes
+    (phones).
     
-    Note: Routing rules can currently only be configured via Telerivet's web UI.
+    Custom Routes were formerly referred to simply as "Routes" within Telerivet. API methods,
+    parameters, and properties related to Custom Routes continue to use the term "Route" to
+    maintain backwards compatibility.
+    
+    Custom routing rules can currently only be configured via Telerivet's web
+    UI.
     
     Fields:
     

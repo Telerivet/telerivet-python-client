@@ -64,7 +64,7 @@ class Project(Entity):
             
             - route_id
                 * ID of the phone or route to send the message from
-                * Default: default sender phone ID for your project
+                * Default: default sender route ID for your project
             
             - service_id
                 * Service that defines the call flow of the voice call (when `message_type` is
@@ -114,14 +114,6 @@ class Project(Entity):
                     will attempt to send messages with higher priority numbers first (for example, so
                     you can prioritize an auto-reply ahead of a bulk message to a large group).
                 * Default: 1
-            
-            - user_id
-                * ID of the Telerivet user account that sent the message (use
-                    [project.getUsers](#Project.getUsers) to look up user IDs). In order to use this
-                    parameter, the user account associated with the API key must have administrator
-                    permissions for the project, and the user account associated with the user_id
-                    parameter must have access to the project.
-                * Default: User account associated with the API key
           
         Returns:
             Message
@@ -129,9 +121,9 @@ class Project(Entity):
         from .message import Message
         return Message(self._api, self._api.doRequest("POST", self.getBaseApiPath() + "/messages/send", options))
 
-    def sendMessages(self, **options):
+    def sendBroadcast(self, **options):
         """
-        Sends an SMS message (optionally with mail-merge templates) or voice call to a group or a
+        Sends a text message (optionally with mail-merge templates) or voice call to a group or a
         list of up to 500 phone numbers
         
         Arguments:
@@ -156,7 +148,11 @@ class Project(Entity):
             
             - route_id
                 * ID of the phone or route to send the message from
-                * Default: default sender phone ID
+                * Default: default sender route ID
+            
+            - title (string)
+                * Title of the broadcast. If a title is not provided, a title will automatically be
+                    generated from the recipient group name or phone numbers.
             
             - service_id
                 * Service that defines the call flow of the voice call (when `message_type` is
@@ -206,13 +202,102 @@ class Project(Entity):
                 * Custom variables to set for each message
           
         Returns:
+            Broadcast
+        """
+        from .broadcast import Broadcast
+        return Broadcast(self._api, self._api.doRequest("POST", self.getBaseApiPath() + "/send_broadcast", options))
+
+    def sendMulti(self, **options):
+        """
+        Sends up to 100 different messages in a single API request. This method is significantly
+        faster than sending a separate API request for each message.
+        
+        Arguments:
+              * Required
+            
+            - messages (array)
+                * Array of up to 100 objects with `content` and `to_number` properties
+                * Required
+            
+            - message_type
+                * Type of message to send
+                * Allowed values: sms
+                * Default: sms
+            
+            - route_id
+                * ID of the phone or route to send the messages from
+                * Default: default sender route ID
+            
+            - broadcast_id (string)
+                * ID of an existing broadcast to associate the messages with
+            
+            - broadcast_title (string)
+                * Title of broadcast to create (when `broadcast_id` is not provided).
+                    When sending more than 100 messages over multiple API
+                    requests, you can associate all messages with the same broadcast by providing a
+                    `broadcast_title` parameter in the first
+                    API request, then retrieving the `broadcast_id` property
+                    from the API response, and passing it as the `broadcast_id` parameter in subsequent
+                    API requests.
+            
+            - status_url
+                * Webhook callback URL to be notified when message status changes
+            
+            - status_secret
+                * POST parameter 'secret' passed to status_url
+            
+            - label_ids (array)
+                * Array of IDs of labels to add to each message (maximum 5)
+            
+            - is_template (bool)
+                * Set to true to evaluate variables like [[contact.name]] in message content [(See
+                    available variables)](#variables)
+                * Default: false
+          
+        Returns:
+            (associative array)
+              - messages (array)
+                  * List of objects representing each newly created message, with the same length
+                      and order as provided in the `messages` parameter in the API request.
+                      Each object has the `id` and `status` properties,
+                      and may have the property `error_message`.
+                      (Other properties of the Message object are
+                      omitted in order to reduce the amount of redundant data sent in each API
+                      response.)
+              
+              - broadcast_id
+                  * ID of broadcast that these messages are associated with, if `broadcast_id` or
+                      `broadcast_title` parameter is provided in the API request.
+        """
+        data = self._api.doRequest("POST", self.getBaseApiPath() + "/send_multi", options)
+        return data
+
+    def sendMessages(self, **options):
+        """
+        (Deprecated) Send a message a to group or a list of phone numbers.
+        This method is only needed to maintain backward compatibility with
+        code developed using previous versions of the client library.
+        Use `sendBroadcast` or `sendMulti` instead.
+        
+        Arguments:
+              * Required
+            
+            - message_type
+            
+            - content
+                * Required
+            
+            - group_id
+            
+            - to_numbers
+          
+        Returns:
             (associative array)
               - count_queued (int)
                   * Number of messages queued to send
               
               - broadcast_id
-                  * ID of broadcast created for this message batch. If `count_queued` is 0 or 1, a
-                      broadcast will not be created, and the `broadcast_id` property will be null.
+                  * ID of broadcast created for this message batch.
         """
         data = self._api.doRequest("POST", self.getBaseApiPath() + "/messages/send_batch", options)
         return data
@@ -259,7 +344,7 @@ class Project(Entity):
             
             - route_id
                 * ID of the phone or route to send the message from
-                * Default: default sender phone ID
+                * Default: default sender route ID
             
             - service_id
                 * Service that defines the call flow of the voice call (when `message_type` is
@@ -334,7 +419,7 @@ class Project(Entity):
                 * Required
             
             - phone_id
-                * ID of the phone that received the message
+                * ID of the phone (basic route) that received the message
                 * Required
             
             - to_number
@@ -640,7 +725,10 @@ class Project(Entity):
                 * ID of the contact who sent/received the message
             
             - phone_id
-                * ID of the phone that sent/received the message
+                * ID of the phone (basic route) that sent/received the message
+            
+            - broadcast_id
+                * ID of the broadcast containing the message
             
             - sort
                 * Sort the results based on a field
@@ -1155,89 +1243,6 @@ class Project(Entity):
         """
         from .service import Service
         return Service(self._api, {'project_id': self.id, 'id': id}, False)
-
-    def queryReceipts(self, **options):
-        """
-        Queries mobile money receipts within the given project.
-        
-        Arguments:
-            
-            - tx_id
-                * Filter receipts by transaction ID
-            
-            - tx_type
-                * Filter receipts by transaction type
-                * Allowed values: receive_money, send_money, pay_bill, deposit, withdrawal,
-                    airtime_purchase, balance_inquiry, reversal
-            
-            - tx_time (UNIX timestamp)
-                * Filter receipts by transaction time
-                * Allowed modifiers: tx_time[ne], tx_time[min], tx_time[max]
-            
-            - name
-                * Filter receipts by other person's name
-                * Allowed modifiers: name[ne], name[prefix], name[not_prefix], name[gte], name[gt],
-                    name[lt], name[lte]
-            
-            - phone_number
-                * Filter receipts by other person's phone number
-                * Allowed modifiers: phone_number[ne], phone_number[prefix],
-                    phone_number[not_prefix], phone_number[gte], phone_number[gt], phone_number[lt],
-                    phone_number[lte]
-            
-            - sort
-                * Sort the results based on a field
-                * Allowed values: default
-                * Default: default
-            
-            - sort_dir
-                * Sort the results in ascending or descending order
-                * Allowed values: asc, desc
-                * Default: asc
-            
-            - page_size (int)
-                * Number of results returned per page (max 200)
-                * Default: 50
-            
-            - offset (int)
-                * Number of items to skip from beginning of result set
-                * Default: 0
-          
-        Returns:
-            APICursor (of MobileMoneyReceipt)
-        """
-        from .mobilemoneyreceipt import MobileMoneyReceipt
-        return self._api.newApiCursor(MobileMoneyReceipt, self.getBaseApiPath() + "/receipts", options)
-
-    def getReceiptById(self, id):
-        """
-        Retrieves the mobile money receipt with the given ID.
-        
-        Arguments:
-          - id
-              * ID of the mobile money receipt
-              * Required
-          
-        Returns:
-            MobileMoneyReceipt
-        """
-        from .mobilemoneyreceipt import MobileMoneyReceipt
-        return MobileMoneyReceipt(self._api, self._api.doRequest("GET", self.getBaseApiPath() + "/receipts/%s" % (id)))
-
-    def initReceiptById(self, id):
-        """
-        Initializes the mobile money receipt with the given ID without making an API request.
-        
-        Arguments:
-          - id
-              * ID of the mobile money receipt
-              * Required
-          
-        Returns:
-            MobileMoneyReceipt
-        """
-        from .mobilemoneyreceipt import MobileMoneyReceipt
-        return MobileMoneyReceipt(self._api, {'project_id': self.id, 'id': id}, False)
 
     def queryRoutes(self, **options):
         """

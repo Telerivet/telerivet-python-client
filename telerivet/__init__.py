@@ -4,7 +4,7 @@ class API:
     
     """
 
-    client_version = '1.3.0'
+    client_version = '1.4.0'
 
     """
         Initializes a client handle to the Telerivet REST API.
@@ -179,7 +179,7 @@ class API:
         return res
 
     def doRequest(self, method, path, params = None):
-        import requests, os, json, sys
+        import requests, os, json, sys, zlib
 
         url = self.api_url + path
 
@@ -196,6 +196,12 @@ class API:
         if method == 'POST' or method == 'PUT':
             headers['Content-Type'] = "application/json"
             data = json.dumps(params)
+
+            if len(data) >= 400:
+                headers['Content-Encoding'] = 'gzip'
+                gzip_compress = zlib.compressobj(-1, zlib.DEFLATED, zlib.MAX_WBITS | 16) # add gzip header
+                gzip_data = gzip_compress.compress(data) + gzip_compress.flush()
+                data = gzip_data
         else:
             query = self.getUrlParams(params)
 

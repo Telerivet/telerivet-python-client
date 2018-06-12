@@ -129,7 +129,7 @@ class Message(Entity):
           * Read-only
       
       - phone_id (string, max 34 characters)
-          * ID of the phone that sent or received the message
+          * ID of the phone (basic route) that sent or received the message
           * Read-only
       
       - contact_id (string, max 34 characters)
@@ -137,7 +137,7 @@ class Message(Entity):
           * Read-only
       
       - route_id (string, max 34 characters)
-          * ID of the route that sent the message (if applicable)
+          * ID of the custom route that sent the message (if applicable)
           * Read-only
       
       - broadcast_id (string, max 34 characters)
