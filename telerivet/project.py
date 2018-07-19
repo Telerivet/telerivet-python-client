@@ -499,6 +499,55 @@ class Project(Entity):
         from .contact import Contact
         return Contact(self._api, self._api.doRequest("POST", self.getBaseApiPath() + "/contacts", options))
 
+    def importContacts(self, **options):
+        """
+        Creates and/or updates up to 200 contacts in a single API call. When creating or updating a
+        large number of contacts, this method is significantly faster than sending a separate API
+        request for each contact.
+        
+        By default, if the phone number for any contact matches an existing
+        contact, the existing contact will be updated with any information provided. This behavior
+        can be modified by setting the `lookup_key` parameter to look up contacts by another field,
+        including a custom variable.
+        
+        If any contact was not found matching the provided `lookup_key`, a
+        new contact will be created.
+        
+        Arguments:
+              * Required
+            
+            - contacts (array)
+                * Array of up to 200 objects which may contain the properties `name` (string),
+                    `phone_number` (string), `vars` (object), and `send_blocked` (boolean). All
+                    properties are optional, unless used as a lookup key; however, either a `name` or
+                    `phone_number` property must be provided for new contacts.
+                * Required
+            
+            - lookup_key
+                * The field used to search for a matching contact, or 'none' to always create a new
+                    contact. To search by a custom variable, precede the variable name with 'vars.'.
+                * Allowed values: phone_number, id, vars.variable_name, none
+                * Default: phone_number
+            
+            - add_group_ids (array)
+                * ID of one or more groups to add these contacts as members (max 5)
+            
+            - remove_group_ids (array)
+                * ID of one or more groups to remove these contacts as members (max 5)
+            
+            - default_route_id
+                * ID of the route to use by default to send messages to these contacts
+          
+        Returns:
+            (associative array)
+              - contacts (array)
+                  * List of objects representing each contact, with the same length and order as
+                      provided in the `contacts` parameter in the API request. Each object has a string
+                      `id` property.
+        """
+        data = self._api.doRequest("POST", self.getBaseApiPath() + "/import_contacts", options)
+        return data
+
     def queryContacts(self, **options):
         """
         Queries contacts within the given project.
