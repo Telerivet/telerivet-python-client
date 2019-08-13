@@ -88,7 +88,7 @@ class ScheduledMessage(Entity):
       
       - message_type
           * Type of scheduled message
-          * Allowed values: sms, ussd, call
+          * Allowed values: sms, mms, ussd, call, service
           * Read-only
       
       - time_created (UNIX timestamp)
@@ -121,6 +121,19 @@ class ScheduledMessage(Entity):
       - is_template (bool)
           * Set to true if Telerivet will render variables like [[contact.name]] in the message
               content, false otherwise
+          * Read-only
+      
+      - track_clicks (boolean)
+          * If true, URLs in the message content will automatically be replaced with unique
+              short URLs
+          * Read-only
+      
+      - media (array)
+          * For text messages containing media files, this is an array of objects with the
+              properties `url`, `type` (MIME type), `filename`, and `size` (file size in bytes).
+              Unknown properties are null. This property is undefined for messages that do not
+              contain media files. Note: For files uploaded via the Telerivet web app, the URL is
+              temporary and may not be valid for more than 1 day.
           * Read-only
       
       - vars (dict)

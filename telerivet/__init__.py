@@ -4,7 +4,7 @@ class API:
     
     """
 
-    client_version = '1.4.2'
+    client_version = '1.4.4'
 
     """
         Initializes a client handle to the Telerivet REST API.
@@ -199,8 +199,9 @@ class API:
 
             if len(data) >= 400:
                 headers['Content-Encoding'] = 'gzip'
+                data_bytes = bytes(data, 'UTF-8') if version_info[0] >= 3 else data
                 gzip_compress = zlib.compressobj(-1, zlib.DEFLATED, zlib.MAX_WBITS | 16) # add gzip header
-                gzip_data = gzip_compress.compress(data) + gzip_compress.flush()
+                gzip_data = gzip_compress.compress(data_bytes) + gzip_compress.flush()
                 data = gzip_data
         else:
             query = self.getUrlParams(params)

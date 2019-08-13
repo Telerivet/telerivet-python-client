@@ -112,7 +112,7 @@ class Phone(Entity):
             
             - message_type
                 * Filter messages by message_type
-                * Allowed values: sms, mms, ussd, call
+                * Allowed values: sms, mms, ussd, call, service
             
             - source
                 * Filter messages by source
@@ -143,6 +143,9 @@ class Phone(Entity):
             
             - broadcast_id
                 * ID of the broadcast containing the message
+            
+            - scheduled_id
+                * ID of the scheduled message that created this message
             
             - sort
                 * Sort the results based on a field

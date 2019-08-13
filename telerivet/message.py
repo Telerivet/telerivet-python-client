@@ -24,7 +24,7 @@ class Message(Entity):
       
       - message_type
           * Type of the message
-          * Allowed values: sms, mms, ussd, call
+          * Allowed values: sms, mms, ussd, call, service
           * Read-only
       
       - source
@@ -39,6 +39,10 @@ class Message(Entity):
       - time_sent (UNIX timestamp)
           * The time that the message was reported to have been sent (null for incoming messages
               and messages that have not yet been sent)
+          * Read-only
+      
+      - time_updated (UNIX timestamp)
+          * The time that the message was last updated in Telerivet.
           * Read-only
       
       - from_number (string)
@@ -123,6 +127,35 @@ class Message(Entity):
               [getMMSParts](#Message.getMMSParts).
           * Read-only
       
+      - track_clicks (boolean)
+          * If true, URLs in the message content are short URLs that redirect to a destination
+              URL.
+          * Read-only
+      
+      - short_urls (array)
+          * For text messages containing short URLs, this is an array of objects with the
+              properties `short_url`, `link_type`, and `time_clicked` (the first time that URL was
+              clicked). If `link_type` is "redirect", the object also contains a `destination_url`
+              property. If `link_type` is "media", the object also contains an `media_index`
+              property (the index in the media array). If `link_type` is "service", the object also
+              contains a `service_id` property. This property is undefined for messages that do not
+              contain short URLs.
+          * Read-only
+      
+      - media (array)
+          * For text messages containing media files, this is an array of objects with the
+              properties `url`, `type` (MIME type), `filename`, and `size` (file size in bytes).
+              Unknown properties are null. This property is undefined for messages that do not
+              contain media files. Note: For files uploaded via the Telerivet web app, the URL is
+              temporary and may not be valid for more than 1 day.
+          * Read-only
+      
+      - time_clicked (UNIX timestamp)
+          * If the message contains any short URLs, this is the first time that a short URL in
+              the message was clicked.  This property is undefined for messages that do not contain
+              short URLs.
+          * Read-only
+      
       - service_id (string, max 34 characters)
           * ID of the service that handled the message (for voice calls, the service defines the
               call flow)
@@ -142,6 +175,10 @@ class Message(Entity):
       
       - broadcast_id (string, max 34 characters)
           * ID of the broadcast that this message is part of (if applicable)
+          * Read-only
+      
+      - scheduled_id (string, max 34 characters)
+          * ID of the scheduled message that created this message is part of (if applicable)
           * Read-only
       
       - user_id (string, max 34 characters)
