@@ -76,6 +76,11 @@ class Message(Entity):
           * Custom variables stored for this message
           * Updatable via API
       
+      - priority (int)
+          * Priority of this message. Telerivet will attempt to send messages with higher
+              priority numbers first. Only defined for outgoing messages.
+          * Read-only
+      
       - error_message
           * A description of the error encountered while sending a message. (This field is
               omitted from the API response if there is no error message.)

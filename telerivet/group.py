@@ -104,7 +104,7 @@ class Group(Entity):
                 * Default: asc
             
             - page_size (int)
-                * Number of results returned per page (max 200)
+                * Number of results returned per page (max 500)
                 * Default: 50
             
             - offset (int)
@@ -147,7 +147,7 @@ class Group(Entity):
                 * Default: asc
             
             - page_size (int)
-                * Number of results returned per page (max 200)
+                * Number of results returned per page (max 500)
                 * Default: 50
             
             - offset (int)

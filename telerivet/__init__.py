@@ -4,7 +4,7 @@ class API:
     
     """
 
-    client_version = '1.4.4'
+    client_version = '1.4.5'
 
     """
         Initializes a client handle to the Telerivet REST API.
@@ -76,7 +76,7 @@ class API:
                 * Default: asc
             
             - page_size (int)
-                * Number of results returned per page (max 200)
+                * Number of results returned per page (max 500)
                 * Default: 50
             
             - offset (int)
@@ -141,7 +141,7 @@ class API:
                 * Default: asc
             
             - page_size (int)
-                * Number of results returned per page (max 200)
+                * Number of results returned per page (max 500)
                 * Default: 50
             
             - offset (int)

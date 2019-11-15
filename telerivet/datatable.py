@@ -77,7 +77,7 @@ class DataTable(Entity):
                 * Default: asc
             
             - page_size (int)
-                * Number of results returned per page (max 200)
+                * Number of results returned per page (max 500)
                 * Default: 50
             
             - offset (int)
@@ -169,7 +169,7 @@ class DataTable(Entity):
             - type (string)
                 * Field type
                 * Allowed values: text, long_text, number, boolean, email, url, audio, phone_number,
-                    date, date_time, groups, route
+                    date, date_time, groups, route, select, buttons
             
             - order (int)
                 * Order in which to display the field
