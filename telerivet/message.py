@@ -29,7 +29,7 @@ class Message(Entity):
       
       - source
           * How the message originated within Telerivet
-          * Allowed values: phone, provider, web, api, service, webhook, scheduled
+          * Allowed values: phone, provider, web, api, service, webhook, scheduled, integration
           * Read-only
       
       - time_created (UNIX timestamp)

@@ -830,7 +830,8 @@ class Project(Entity):
             
             - source
                 * Filter messages by source
-                * Allowed values: phone, provider, web, api, service, webhook, scheduled
+                * Allowed values: phone, provider, web, api, service, webhook, scheduled,
+                    integration
             
             - starred (bool)
                 * Filter messages by starred/unstarred
@@ -1450,6 +1451,81 @@ class Project(Entity):
             array
         """
         return self._api.doRequest("GET", self.getBaseApiPath() + "/users")
+
+    def queryAirtimeTransactions(self, **options):
+        """
+        Returns information about each airtime transaction.
+        
+        Arguments:
+            
+            - time_created[min] (UNIX timestamp)
+                * Filter transactions created on or after a particular time
+            
+            - time_created[max] (UNIX timestamp)
+                * Filter transactions created before a particular time
+            
+            - contact_id
+                * Filter transactions sent to a particular contact
+            
+            - to_number
+                * Filter transactions sent to a particular phone number
+            
+            - service_id
+                * Filter transactions sent by a particular service
+            
+            - status
+                * Filter transactions by status
+                * Allowed values: pending, queued, processing, successful, failed, cancelled,
+                    pending_payment, pending_approval
+            
+            - sort_dir
+                * Sort the results in ascending or descending order
+                * Allowed values: asc, desc
+                * Default: asc
+            
+            - page_size (int)
+                * Number of results returned per page (max 500)
+                * Default: 50
+            
+            - offset (int)
+                * Number of items to skip from beginning of result set
+                * Default: 0
+          
+        Returns:
+            APICursor (of AirtimeTransaction)
+        """
+        from .airtimetransaction import AirtimeTransaction
+        return self._api.newApiCursor(AirtimeTransaction, self.getBaseApiPath() + "/airtime_transactions", options)
+
+    def getAirtimeTransactionById(self, id):
+        """
+        Gets an airtime transaction by ID
+        
+        Arguments:
+          - id
+              * ID of the airtime transaction
+              * Required
+          
+        Returns:
+            AirtimeTransaction
+        """
+        from .airtimetransaction import AirtimeTransaction
+        return AirtimeTransaction(self._api, self._api.doRequest("GET", self.getBaseApiPath() + "/airtime_transactions/%s" % (id)))
+
+    def initAirtimeTransactionById(self, id):
+        """
+        Initializes an airtime transaction by ID without making an API request.
+        
+        Arguments:
+          - id
+              * ID of the airtime transaction
+              * Required
+          
+        Returns:
+            AirtimeTransaction
+        """
+        from .airtimetransaction import AirtimeTransaction
+        return AirtimeTransaction(self._api, {'project_id': self.id, 'id': id}, False)
 
     def save(self):
         """

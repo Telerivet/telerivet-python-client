@@ -28,6 +28,11 @@ class Contact(Entity):
           * True if Telerivet is blocked from sending messages to this contact
           * Updatable via API
       
+      - conversation_status
+          * Current status of the conversation with this contact
+          * Allowed values: closed, active, handled
+          * Updatable via API
+      
       - last_message_time (UNIX timestamp)
           * Last time the contact sent or received a message (null if no messages have been sent
               or received)
@@ -131,7 +136,8 @@ class Contact(Entity):
             
             - source
                 * Filter messages by source
-                * Allowed values: phone, provider, web, api, service, webhook, scheduled
+                * Allowed values: phone, provider, web, api, service, webhook, scheduled,
+                    integration
             
             - starred (bool)
                 * Filter messages by starred/unstarred

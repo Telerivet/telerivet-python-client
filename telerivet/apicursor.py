@@ -1,4 +1,4 @@
-class APICursor:    
+class APICursor:
     """
     An easy-to-use interface for interacting with API methods that return collections of objects
     that may be split into multiple pages of results.
@@ -7,18 +7,18 @@ class APICursor:
     having to manually fetch each page of results.
     """
 
-    def __init__(self, api, item_cls, path, params = None):        
+    def __init__(self, api, item_cls, path, params = None):
         if params is None:
             params = {}
-    
-        if 'count' in params:            
+
+        if 'count' in params:
             raise TelerivetException("Cannot construct APICursor with 'count' parameter. Call the count() method instead.")
-    
+
         self.api = api
         self.item_cls = item_cls
         self.path = path
         self.params = params
-        
+
         self._count = -1
         self.pos = None
         self.data = None
@@ -26,7 +26,7 @@ class APICursor:
         self.next_marker = None
         self._limit = None
         self.offset = 0
-    
+
     def limit(self, limit):
         """
         Limits the maximum number of entities fetched by this query.
@@ -43,11 +43,11 @@ class APICursor:
           
         Returns:
             the current APICursor object
-        """                
-    
-        self._limit = limit    
+        """
+
+        self._limit = limit
         return self
-    
+
     def count(self):
         """
         Returns the total count of entities matching the current query, without actually fetching
@@ -60,16 +60,16 @@ class APICursor:
         Returns:
             int
         """
-    
+
         if self._count == -1:
             params = self.params.copy()
             params['count'] = 1
-            
+
             res = self.api.doRequest("GET", self.path, params)
             self._count = int(res['count'])
-        
+
         return self._count
-    
+
     def all(self):
         """
         Get all entities matching the current query in an array.
@@ -81,10 +81,10 @@ class APICursor:
         Returns:
             array
         """
-    
+
         return [item for item in self]
 
-    def hasNext(self):       
+    def hasNext(self):
         """
         Returns true if there are any more entities in the result set, false otherwise
         
@@ -93,32 +93,32 @@ class APICursor:
         """
         if self._limit is not None and self.offset >= self._limit:
             return False
-        
+
         if self.data is None:
             self.loadNextPage()
-            
+
         if self.pos < len(self.data):
             return True
 
         if not self.truncated:
             return False
-            
+
         self.loadNextPage()
-        return self.pos < len(self.data)   
-    
+        return self.pos < len(self.data)
+
     def next(self):
         """
         Returns the next entity in the result set.
         
         Returns:
             Entity
-        """                
+        """
         if self._limit is not None and self.offset >= self._limit:
             raise StopIteration
-        
+
         if (self.data is None) or (self.pos >= len(self.data) and self.truncated):
             self.loadNextPage()
-        
+
         if self.pos < len(self.data):
             item_data = self.data[self.pos]
             self.pos += 1
@@ -130,21 +130,21 @@ class APICursor:
 
     def __next__(self):
         return self.next()
-            
+
     def __iter__(self):
-        return self    
-    
+        return self
+
     def loadNextPage(self):
         request_params = self.params.copy()
-                
+
         if self.next_marker is not None:
             request_params['marker'] = self.next_marker
-        
+
         if self._limit is not None and not ("page_size" in request_params):
             request_params["page_size"] = min(self._limit, 200)
-        
+
         response = self.api.doRequest("GET", self.path, request_params)
-        
+
         self.data = response['data']
         self.truncated = response['truncated']
         self.next_marker = response['next_marker']
