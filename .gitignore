@@ -1,1 +1,4 @@
 *.pyc
+dist/
+telerivet.egg-info/
+build/
