@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(name='telerivet',
-      version='1.4.8',
+      version='1.5.0',
       description='Python client library for Telerivet REST API',
       author='Telerivet, Inc.',
       author_email='support@telerivet.com',

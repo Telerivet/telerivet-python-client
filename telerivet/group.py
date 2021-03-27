@@ -51,7 +51,7 @@ class Group(Entity):
                 * Filter contacts by phone number
                 * Allowed modifiers: phone_number[ne], phone_number[prefix],
                     phone_number[not_prefix], phone_number[gte], phone_number[gt], phone_number[lt],
-                    phone_number[lte]
+                    phone_number[lte], phone_number[exists]
             
             - time_created (UNIX timestamp)
                 * Filter contacts by time created
@@ -59,20 +59,20 @@ class Group(Entity):
             
             - last_message_time (UNIX timestamp)
                 * Filter contacts by last time a message was sent or received
-                * Allowed modifiers: last_message_time[exists], last_message_time[ne],
-                    last_message_time[min], last_message_time[max]
+                * Allowed modifiers: last_message_time[ne], last_message_time[min],
+                    last_message_time[max], last_message_time[exists]
             
             - last_incoming_message_time (UNIX timestamp)
                 * Filter contacts by last time a message was received
-                * Allowed modifiers: last_incoming_message_time[exists],
-                    last_incoming_message_time[ne], last_incoming_message_time[min],
-                    last_incoming_message_time[max]
+                * Allowed modifiers: last_incoming_message_time[ne],
+                    last_incoming_message_time[min], last_incoming_message_time[max],
+                    last_incoming_message_time[exists]
             
             - last_outgoing_message_time (UNIX timestamp)
                 * Filter contacts by last time a message was sent
-                * Allowed modifiers: last_outgoing_message_time[exists],
-                    last_outgoing_message_time[ne], last_outgoing_message_time[min],
-                    last_outgoing_message_time[max]
+                * Allowed modifiers: last_outgoing_message_time[ne],
+                    last_outgoing_message_time[min], last_outgoing_message_time[max],
+                    last_outgoing_message_time[exists]
             
             - incoming_message_count (int)
                 * Filter contacts by number of messages received from the contact
@@ -89,9 +89,9 @@ class Group(Entity):
             
             - vars (dict)
                 * Filter contacts by value of a custom variable (e.g. vars[email], vars[foo], etc.)
-                * Allowed modifiers: vars[foo][exists], vars[foo][ne], vars[foo][prefix],
-                    vars[foo][not_prefix], vars[foo][gte], vars[foo][gt], vars[foo][lt], vars[foo][lte],
-                    vars[foo][min], vars[foo][max]
+                * Allowed modifiers: vars[foo][ne], vars[foo][prefix], vars[foo][not_prefix],
+                    vars[foo][gte], vars[foo][gt], vars[foo][lt], vars[foo][lte], vars[foo][min],
+                    vars[foo][max], vars[foo][exists]
             
             - sort
                 * Sort the results based on a field
@@ -133,8 +133,8 @@ class Group(Entity):
             
             - next_time (UNIX timestamp)
                 * Filter scheduled messages by next_time
-                * Allowed modifiers: next_time[exists], next_time[ne], next_time[min],
-                    next_time[max]
+                * Allowed modifiers: next_time[ne], next_time[min], next_time[max],
+                    next_time[exists]
             
             - sort
                 * Sort the results based on a field

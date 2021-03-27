@@ -247,8 +247,8 @@ class Contact(Entity):
             
             - next_time (UNIX timestamp)
                 * Filter scheduled messages by next_time
-                * Allowed modifiers: next_time[exists], next_time[ne], next_time[min],
-                    next_time[max]
+                * Allowed modifiers: next_time[ne], next_time[min], next_time[max],
+                    next_time[exists]
             
             - sort
                 * Sort the results based on a field
@@ -321,9 +321,9 @@ class Contact(Entity):
             
             - vars (dict)
                 * Filter states by value of a custom variable (e.g. vars[email], vars[foo], etc.)
-                * Allowed modifiers: vars[foo][exists], vars[foo][ne], vars[foo][prefix],
-                    vars[foo][not_prefix], vars[foo][gte], vars[foo][gt], vars[foo][lt], vars[foo][lte],
-                    vars[foo][min], vars[foo][max]
+                * Allowed modifiers: vars[foo][ne], vars[foo][prefix], vars[foo][not_prefix],
+                    vars[foo][gte], vars[foo][gt], vars[foo][lt], vars[foo][lte], vars[foo][min],
+                    vars[foo][max], vars[foo][exists]
             
             - sort
                 * Sort the results based on a field

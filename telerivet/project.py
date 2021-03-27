@@ -633,6 +633,9 @@ class Project(Entity):
         
         Arguments:
             
+            - group_id
+                * Filter contacts within a group
+            
             - name
                 * Filter contacts by name
                 * Allowed modifiers: name[ne], name[prefix], name[not_prefix], name[gte], name[gt],
@@ -642,7 +645,7 @@ class Project(Entity):
                 * Filter contacts by phone number
                 * Allowed modifiers: phone_number[ne], phone_number[prefix],
                     phone_number[not_prefix], phone_number[gte], phone_number[gt], phone_number[lt],
-                    phone_number[lte]
+                    phone_number[lte], phone_number[exists]
             
             - time_created (UNIX timestamp)
                 * Filter contacts by time created
@@ -650,20 +653,20 @@ class Project(Entity):
             
             - last_message_time (UNIX timestamp)
                 * Filter contacts by last time a message was sent or received
-                * Allowed modifiers: last_message_time[exists], last_message_time[ne],
-                    last_message_time[min], last_message_time[max]
+                * Allowed modifiers: last_message_time[ne], last_message_time[min],
+                    last_message_time[max], last_message_time[exists]
             
             - last_incoming_message_time (UNIX timestamp)
                 * Filter contacts by last time a message was received
-                * Allowed modifiers: last_incoming_message_time[exists],
-                    last_incoming_message_time[ne], last_incoming_message_time[min],
-                    last_incoming_message_time[max]
+                * Allowed modifiers: last_incoming_message_time[ne],
+                    last_incoming_message_time[min], last_incoming_message_time[max],
+                    last_incoming_message_time[exists]
             
             - last_outgoing_message_time (UNIX timestamp)
                 * Filter contacts by last time a message was sent
-                * Allowed modifiers: last_outgoing_message_time[exists],
-                    last_outgoing_message_time[ne], last_outgoing_message_time[min],
-                    last_outgoing_message_time[max]
+                * Allowed modifiers: last_outgoing_message_time[ne],
+                    last_outgoing_message_time[min], last_outgoing_message_time[max],
+                    last_outgoing_message_time[exists]
             
             - incoming_message_count (int)
                 * Filter contacts by number of messages received from the contact
@@ -680,9 +683,9 @@ class Project(Entity):
             
             - vars (dict)
                 * Filter contacts by value of a custom variable (e.g. vars[email], vars[foo], etc.)
-                * Allowed modifiers: vars[foo][exists], vars[foo][ne], vars[foo][prefix],
-                    vars[foo][not_prefix], vars[foo][gte], vars[foo][gt], vars[foo][lt], vars[foo][lte],
-                    vars[foo][min], vars[foo][max]
+                * Allowed modifiers: vars[foo][ne], vars[foo][prefix], vars[foo][not_prefix],
+                    vars[foo][gte], vars[foo][gt], vars[foo][lt], vars[foo][lte], vars[foo][min],
+                    vars[foo][max], vars[foo][exists]
             
             - sort
                 * Sort the results based on a field
@@ -757,8 +760,8 @@ class Project(Entity):
             
             - last_active_time (UNIX timestamp)
                 * Filter phones by last active time
-                * Allowed modifiers: last_active_time[exists], last_active_time[ne],
-                    last_active_time[min], last_active_time[max]
+                * Allowed modifiers: last_active_time[ne], last_active_time[min],
+                    last_active_time[max], last_active_time[exists]
             
             - sort
                 * Sort the results based on a field
@@ -819,6 +822,9 @@ class Project(Entity):
         Queries messages within the given project.
         
         Arguments:
+            
+            - label_id
+                * Filter messages with a label
             
             - direction
                 * Filter messages by direction
@@ -987,6 +993,284 @@ class Project(Entity):
         """
         from .broadcast import Broadcast
         return Broadcast(self._api, {'project_id': self.id, 'id': id}, False)
+
+    def createTask(self, **options):
+        """
+        Creates and starts an asynchronous task that is applied to all entities matching a filter
+        (e.g. contacts, messages, or data rows).
+        Tasks are designed to efficiently process a large number of
+        entities. When processing a large number of entities,
+        tasks are much faster than using the API to query and loop over
+        all objects matching a filter.
+        
+        Several different types of tasks are supported, including
+        applying services to contacts, messages, or data rows;
+        adding or removing contacts from a group; blocking or unblocking
+        sending messages to a contact; updating a custom variable;
+        deleting contacts, messages, or data rows; or exporting data to
+        CSV.
+        
+        When using a task to apply a Custom Actions or Cloud Script API
+        service (`apply_service_to_contacts`, `apply_service_to_rows`, or
+        `apply_service_to_messages`),
+        the `task` variable will be available within the service. The
+        service can use custom variables on the task object (e.g. `task.vars.example`), such as
+        to store aggregate statistics for the rows matching the filter.
+        
+        Arguments:
+              * Required
+            
+            - task_type
+                * Type of task to create. Each `task_type` applies to a certain type of entity (such
+                    as a contact, message, or data row).
+                    
+                    Tasks for contacts:
+                    
+                    - `update_contact_var`
+                    - `add_group_members`
+                    - `remove_group_members`
+                    - `set_conversation_status`
+                    - `set_send_blocked`
+                    - `apply_service_to_contacts`
+                    - `delete_contacts`
+                    - `export_contacts`
+                    
+                    Tasks for data rows:
+                    
+                    - `update_row_var`
+                    - `apply_service_to_rows`
+                    - `delete_rows`
+                    - `export_rows`
+                    
+                    Tasks for messages:
+                    
+                    - `cancel_messages`
+                    - `resend_messages`
+                    - `retry_message_services`
+                    - `apply_service_to_messages`
+                    - `add_label`
+                    - `remove_label`
+                    - `update_message_var`
+                    - `delete_messages`
+                    - `export_messages`
+                * Allowed values: update_contact_var, delete_contacts, add_group_members,
+                    remove_group_members, set_conversation_status, set_send_blocked,
+                    apply_service_to_contacts, update_row_var, delete_rows, apply_service_to_rows,
+                    delete_messages, cancel_messages, resend_messages, retry_message_services,
+                    apply_service_to_messages, add_label, remove_label, update_message_var,
+                    export_messages, export_contacts, export_rows
+                * Required
+            
+            - task_params (dict)
+                * Parameters applied to all matching rows (specific to `task_type`).
+                    
+                    **`apply_service_to_contacts`**,
+                    **`apply_service_to_messages`**, **`apply_service_to_rows`**:
+                    <table>
+                    <tr><td> `service_id` </td> <td> The ID of the
+                    service to apply (string) </td></tr>
+                    </table>
+                    
+                    **`update_contact_var`**, **`update_message_var`**,
+                    **`update_row_var`**:
+                    <table>
+                    <tr><td> `variable` </td> <td> The custom variable
+                    name (string) </td></tr>
+                    <tr><td> `value` </td> <td> The value to set
+                    (string, boolean, float, null) </td></tr>
+                    </table>
+                    
+                    **`add_group_members`**, **`remove_group_members`**:
+                    <table>
+                    <tr><td> `group_id` </td> <td> The ID of the group
+                    (string) </td></tr>
+                    </table>
+                    
+                    **`add_label`**, **`remove_label`**:
+                    <table>
+                    <tr><td> `label_id` </td> <td> The ID of the label
+                    (string) </td></tr>
+                    </table>
+                    
+                    **`resend_messages`**:
+                    <table>
+                    <tr><td> `route_id` </td> <td> ID of the new route
+                    to use, or null to use the original route (string) </td></tr>
+                    </table>
+                    
+                    **`set_send_blocked`**:
+                    <table>
+                    <tr><td> `send_blocked` </td> <td> `true` to block
+                    sending messages, `false` to unblock sending messages (boolean) </td></tr>
+                    </table>
+                    
+                    **`set_conversation_status`**:
+                    <table>
+                    <tr><td> `conversation_status` </td> <td> "active",
+                    "handled", or "closed" (string) </td></tr>
+                    </table>
+                    
+                    **`export_contacts`**, **`export_messages`**,
+                    **`export_rows`**:
+                    <table>
+                    <tr><td>`storage_id` </td> <td> ID of a storage
+                    backend where the CSV file will be saved. (string)
+                    
+                    Currently only AWS S3 is supported as a storage
+                    backend.
+                    This requires creating a S3 bucket in your own
+                    AWS account, as well as an IAM user with access key and secret that has permission
+                    to write to that bucket.
+                    To configure your own S3 bucket as a storage
+                    backend, contact support.
+                    
+                    Direct downloads are not supported when
+                    exporting data via the API.
+                    (string) </td></tr>
+                    <tr><td>`filename` </td> <td> Path within the
+                    storage backend where the CSV file will be saved </td></tr>
+                    <tr><td>`column_ids` </td> <td> IDs of columns to
+                    save in the CSV file. If not provided, all default columns will be saved. (array of
+                    strings, optional) </td></tr>
+                    </table>
+                    
+                    **`delete_contacts`**, **`delete_messages`**,
+                    **`delete_rows`**, **`cancel_messages`**, **`retry_message_services`**: <br />
+                    No parameters.
+            
+            - filter_type
+                * Type of filter defining the rows that the task is applied to.
+                    
+                    Each `filter_type` queries a certain type of
+                    entity (such as contacts, messages, or data rows).
+                    
+                    In general, the `task_type` and the
+                    `filter_type` must return the same type of entity; however, tasks applied to
+                    contacts (other than `export_contacts`) can also be applied
+                    when the filter returns entities that are
+                    associated with a contact, such as messages or data rows. (Note that in this case,
+                    it is possible for the task to be applied multiple times to an individual contact if
+                    multiple messages or data rows are associated with the same contact.)
+                * Allowed values: query_contacts, contact_ids, query_rows, row_ids, query_messages,
+                    message_ids
+                * Required
+            
+            - filter_params (dict)
+                * Parameters defining the rows that the task is applied to (specific to
+                    `filter_type`).
+                    
+                    **`query_contacts`**: <br />
+                    The same filter parameters as used by
+                    [project.queryContacts](#Project.queryContacts). If you want to apply the task to
+                    all contacts, use the parameters {"all": true}.
+                    
+                    **`contact_ids`**:
+                    <table>
+                    <tr><td> `contact_ids` </td> <td> IDs of up to 100
+                    contacts to apply this task to (array of strings) </td></tr>
+                    </table>
+                    
+                    **`query_messages`**: <br />
+                    The same filter parameters as used by
+                    [project.queryMessages](#Project.queryMessages). If you want to apply the task to
+                    all messages, use the parameters {"all": true}.
+                    
+                    **`message_ids`**:
+                    <table>
+                    <tr><td> `message_ids` </td> <td> IDs of up to 100
+                    messages to apply this task to (array of strings) </td></tr>
+                    </table>
+                    
+                    **`query_rows`**: <br />
+                    The same filter parameters as used by
+                    [table.queryRows](#DataTable.queryRows). If you want to apply the task to all rows
+                    in the table, use the parameters {"all": true}.
+                    
+                    **`row_ids`**:
+                    <table>
+                    <tr><td> `row_ids` </td> <td> IDs of up to 100 data
+                    rows to apply this task to (array of strings) </td></tr>
+                    </table>
+                * Required
+            
+            - table_id (string, max 34 characters)
+                * ID of the data table this task is applied to (if applicable).
+                    
+                    Required if filter_type is `query_rows` or `row_ids`.
+            
+            - vars (dict)
+                * Initial custom variables to set for the task.
+                    
+                    If the task applies a service, the service can read
+                    and write custom variables on the task object (e.g. `task.vars.example`), such as
+                    to store aggregate statistics for the rows matching
+                    the filter.
+          
+        Returns:
+            Task
+        """
+        from .task import Task
+        return Task(self._api, self._api.doRequest("POST", self.getBaseApiPath() + "/tasks", options))
+
+    def queryTasks(self, **options):
+        """
+        Queries batch tasks within the given project.
+        
+        Arguments:
+            
+            - sort
+                * Sort the results based on a field
+                * Allowed values: default
+                * Default: default
+            
+            - sort_dir
+                * Sort the results in ascending or descending order
+                * Allowed values: asc, desc
+                * Default: asc
+            
+            - page_size (int)
+                * Number of results returned per page (max 500)
+                * Default: 50
+            
+            - offset (int)
+                * Number of items to skip from beginning of result set
+                * Default: 0
+          
+        Returns:
+            APICursor (of Task)
+        """
+        from .task import Task
+        return self._api.newApiCursor(Task, self.getBaseApiPath() + "/tasks", options)
+
+    def getTaskById(self, id):
+        """
+        Retrieves the task with the given ID.
+        
+        Arguments:
+          - id
+              * ID of the task
+              * Required
+          
+        Returns:
+            Task
+        """
+        from .task import Task
+        return Task(self._api, self._api.doRequest("GET", self.getBaseApiPath() + "/tasks/%s" % (id)))
+
+    def initTaskById(self, id):
+        """
+        Initializes the task with the given ID without making an API request.
+        
+        Arguments:
+          - id
+              * ID of the task
+              * Required
+          
+        Returns:
+            Task
+        """
+        from .task import Task
+        return Task(self._api, {'project_id': self.id, 'id': id}, False)
 
     def queryGroups(self, **options):
         """
@@ -1247,8 +1531,8 @@ class Project(Entity):
             
             - next_time (UNIX timestamp)
                 * Filter scheduled messages by next_time
-                * Allowed modifiers: next_time[exists], next_time[ne], next_time[min],
-                    next_time[max]
+                * Allowed modifiers: next_time[ne], next_time[min], next_time[max],
+                    next_time[exists]
             
             - sort
                 * Sort the results based on a field
@@ -1320,7 +1604,7 @@ class Project(Entity):
             
             - context
                 * Filter services that can be invoked in a particular context
-                * Allowed values: message, call, contact, project
+                * Allowed values: message, call, ussd_session, row, contact, project
             
             - sort
                 * Sort the results based on a field

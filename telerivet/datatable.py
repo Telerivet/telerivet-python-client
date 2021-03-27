@@ -23,7 +23,8 @@ class DataTable(Entity):
           * Updatable via API
       
       - num_rows (int)
-          * Number of rows in the table
+          * Number of rows in the table. For performance reasons, this number may sometimes be
+              out-of-date.
           * Read-only
       
       - show_add_row (bool)
@@ -62,9 +63,9 @@ class DataTable(Entity):
             
             - vars (dict)
                 * Filter data rows by value of a custom variable (e.g. vars[q1], vars[foo], etc.)
-                * Allowed modifiers: vars[foo][exists], vars[foo][ne], vars[foo][prefix],
-                    vars[foo][not_prefix], vars[foo][gte], vars[foo][gt], vars[foo][lt], vars[foo][lte],
-                    vars[foo][min], vars[foo][max]
+                * Allowed modifiers: vars[foo][ne], vars[foo][prefix], vars[foo][not_prefix],
+                    vars[foo][gte], vars[foo][gt], vars[foo][lt], vars[foo][lte], vars[foo][min],
+                    vars[foo][max], vars[foo][exists]
             
             - sort
                 * Sort the results based on a field
@@ -169,7 +170,7 @@ class DataTable(Entity):
             - type (string)
                 * Field type
                 * Allowed values: text, long_text, number, boolean, email, url, audio, phone_number,
-                    date, date_time, groups, route, select, buttons
+                    date, date_time, groups, route, select, buttons, contact
             
             - order (int)
                 * Order in which to display the field
