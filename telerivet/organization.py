@@ -96,6 +96,84 @@ class Organization(Entity):
         """
         return self._api.doRequest("GET", self.getBaseApiPath() + "/usage/%s" % (usage_type))
 
+    def getMessageStats(self, **options):
+        """
+        Retrieves statistics about messages sent or received via Telerivet. This endpoint returns
+        historical data that is computed shortly after midnight each day in the project's time zone,
+        and does not contain message statistics for the current day.
+        
+        Arguments:
+              * Required
+            
+            - start_date (string)
+                * Start date of message statistics, in YYYY-MM-DD format
+                * Required
+            
+            - end_date (string)
+                * End date of message statistics (inclusive), in YYYY-MM-DD format
+                * Required
+            
+            - rollup (string)
+                * Date interval to group by
+                * Allowed values: day, week, month, year, all
+                * Default: day
+            
+            - properties (string)
+                * Comma separated list of properties to group by
+                * Allowed values: org_id, org_name, org_industry, project_id, project_name, user_id,
+                    user_email, user_name, phone_id, phone_name, phone_type, direction, source, status,
+                    network_code, network_name, message_type, service_id, service_name, simulated, link
+            
+            - metrics (string)
+                * Comma separated list of metrics to return (summed for each distinct value of the
+                    requested properties)
+                * Allowed values: count, num_parts, duration, price
+                * Required
+            
+            - currency (string)
+                * Three-letter ISO 4217 currency code used when returning the 'price' field. If the
+                    original price was in a different currency, it will be converted to the requested
+                    currency using the approximate current exchange rate.
+                * Default: USD
+            
+            - filters (dict)
+                * Key-value pairs of properties and corresponding values; the returned statistics
+                    will only include messages where the property matches the provided value. Only the
+                    following properties are supported for filters: `user_id`, `phone_id`, `direction`,
+                    `source`, `status`, `service_id`, `simulated`, `message_type`, `network_code`
+          
+        Returns:
+            (associative array)
+              - intervals (array)
+                  * List of objects representing each date interval containing at least one message
+                      matching the filters.
+                      Each object has the following properties:
+                      
+                      <table>
+                      <tr><td> start_time </td> <td> The UNIX timestamp of the start
+                      of the interval (int) </td></tr>
+                      <tr><td> end_time </td> <td> The UNIX timestamp of the end of
+                      the interval, exclusive (int) </td></tr>
+                      <tr><td> start_date </td> <td> The date of the start of the
+                      interval in YYYY-MM-DD format (string) </td></tr>
+                      <tr><td> end_date </td> <td> The date of the end of the
+                      interval in YYYY-MM-DD format, inclusive (string) </td></tr>
+                      <tr><td> groups </td> <td> Array of groups for each
+                      combination of requested property values matching the filters (array)
+                      <br /><br />
+                      Each object has the following properties:
+                      <table>
+                      <tr><td> properties </td> <td> An object of key/value
+                      pairs for each distinct value of the requested properties (object) </td></tr>
+                      <tr><td> metrics </td> <td> An object of key/value pairs
+                      for each requested metric (object) </td></tr>
+                      </table>
+                      </td></tr>
+                      </table>
+        """
+        data = self._api.doRequest("GET", self.getBaseApiPath() + "/message_stats", options)
+        return data
+
     def queryProjects(self, **options):
         """
         Queries projects in this organization.

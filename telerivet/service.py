@@ -118,6 +118,15 @@ class Service(Entity):
                     or `phone_number` is required if `context` is 'contact'). If no  contact exists with
                     this phone number, a new contact will be created.
             
+            - variables (dict)
+                * Object containing up to 25 temporary variable names and their corresponding values
+                    to set when invoking the service. Values may be strings, numbers, or boolean
+                    (true/false). String values may be up to 4096 bytes in length. Arrays and objects
+                    are not supported. Within Custom Actions, each variable can be used like `[[$name]]`
+                    (with a leading `$` character and surrounded by double square brackets). Within a
+                    Cloud Script API service or JavaScript action, each variable will be available as a
+                    global JavaScript variable like `$name` (with a leading `$` character).
+            
             - route_id
                 * The ID of the phone or route that the service will use for sending messages by
                     default

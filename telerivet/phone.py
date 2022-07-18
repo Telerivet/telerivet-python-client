@@ -125,7 +125,7 @@ class Phone(Entity):
             - status
                 * Filter messages by status
                 * Allowed values: ignored, processing, received, sent, queued, failed,
-                    failed_queued, cancelled, delivered, not_delivered
+                    failed_queued, cancelled, delivered, not_delivered, read
             
             - time_created[min] (UNIX timestamp)
                 * Filter messages created on or after a particular time
@@ -135,18 +135,26 @@ class Phone(Entity):
             
             - external_id
                 * Filter messages by ID from an external provider
+                * Allowed modifiers: external_id[ne], external_id[exists]
             
             - contact_id
                 * ID of the contact who sent/received the message
+                * Allowed modifiers: contact_id[ne], contact_id[exists]
             
             - phone_id
                 * ID of the phone (basic route) that sent/received the message
             
             - broadcast_id
                 * ID of the broadcast containing the message
+                * Allowed modifiers: broadcast_id[ne], broadcast_id[exists]
             
             - scheduled_id
                 * ID of the scheduled message that created this message
+                * Allowed modifiers: scheduled_id[ne], scheduled_id[exists]
+            
+            - group_id
+                * Filter messages sent or received by contacts in a particular group. The group must
+                    be a normal group, not a dynamic group.
             
             - sort
                 * Sort the results based on a field

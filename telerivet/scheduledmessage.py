@@ -136,6 +136,13 @@ class ScheduledMessage(Entity):
               temporary and may not be valid for more than 1 day.
           * Read-only
       
+      - route_params (dict)
+          * Route-specific parameters to use when sending the message. The parameters object may
+              have keys matching the `phone_type` field of a phone (basic route) that may be used to
+              send the message. The corresponding value is an object with route-specific parameters
+              to use when sending a message with that type of route.
+          * Read-only
+      
       - vars (dict)
           * Custom variables stored for this scheduled message (copied to Message when sent)
           * Updatable via API

@@ -56,7 +56,7 @@ class DataTable(Entity):
             
             - time_created (UNIX timestamp)
                 * Filter data rows by the time they were created
-                * Allowed modifiers: time_created[ne], time_created[min], time_created[max]
+                * Allowed modifiers: time_created[min], time_created[max]
             
             - contact_id
                 * Filter data rows associated with a particular contact
@@ -163,20 +163,31 @@ class DataTable(Entity):
               * The variable name of the field to create or update.
               * Required
           
+              * Required
             
             - name (string, max 64 characters)
                 * Display name for the field
             
             - type (string)
                 * Field type
-                * Allowed values: text, long_text, number, boolean, email, url, audio, phone_number,
-                    date, date_time, groups, route, select, buttons, contact
+                * Allowed values: text, long_text, phone_number, email, url, audio, date, date_time,
+                    number, boolean, select
             
             - order (int)
                 * Order in which to display the field
             
+            - items (array)
+                * Array of up to 100 objects containing `value` and `label` string properties to
+                    show in the dropdown list when type is `select`. Each `value` and `label` must be
+                    between 1 and 256 characters in length.
+                * Required if type is `select`
+            
             - readonly (bool)
                 * Set to true to prevent editing the field in the Telerivet web app
+            
+            - lookup_key (bool)
+                * Set to true to allow using this field as a lookup key when importing rows via the
+                    Telerivet web app
           
         Returns:
             object
