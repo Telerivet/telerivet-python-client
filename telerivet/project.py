@@ -20,13 +20,27 @@ class Project(Entity):
           * Updatable via API
       
       - timezone_id
-          * Default TZ database timezone ID; see
-              <http://en.wikipedia.org/wiki/List_of_tz_database_time_zones>
-          * Read-only
+          * Default TZ database timezone ID; see [List of tz database time zones Wikipedia
+              article](http://en.wikipedia.org/wiki/List_of_tz_database_time_zones).
+          * Updatable via API
       
       - url_slug
           * Unique string used as a component of the project's URL in the Telerivet web app
-          * Read-only
+          * Updatable via API
+      
+      - default_route_id
+          * The ID of a basic route or custom route that will be used to send messages by
+              default (via both the API and web app), unless a particular route ID is specified when
+              sending the message.
+          * Updatable via API
+      
+      - auto_create_contacts (bool)
+          * If true, a contact will be automatically created for each unique phone number that a
+              message is sent to or received from. If false, contacts will not automatically be
+              created (unless contact information is modified by an automated service). The
+              Conversations tab in the web app will only show messages that are associated with a
+              contact.
+          * Updatable via API
       
       - vars (dict)
           * Custom variables stored for this project
@@ -39,7 +53,7 @@ class Project(Entity):
 
     def sendMessage(self, **options):
         """
-        Sends one message (SMS, MMS, voice call, or USSD request).
+        Sends one message (SMS, MMS, chat app message, voice call, or USSD request).
         
         Arguments:
               * Required
@@ -47,7 +61,7 @@ class Project(Entity):
             - message_type
                 * Type of message to send. If `text`, will use the default text message type for the
                     selected route.
-                * Allowed values: sms, mms, ussd, call, text
+                * Allowed values: text, sms, mms, ussd, call, chat, service
                 * Default: text
             
             - content
@@ -73,9 +87,9 @@ class Project(Entity):
             - status_secret
                 * POST parameter 'secret' passed to status_url
             
-            - is_template (bool)
+            - replace_variables (bool)
                 * Set to true to evaluate variables like [[contact.name]] in message content. [(See
-                    available variables)](#variables)
+                    available variables)](#variables) (`is_template` parameter also accepted)
                 * Default: false
             
             - track_clicks (boolean)
@@ -173,7 +187,7 @@ class Project(Entity):
             - message_type
                 * Type of message to send. If `text`, will use the default text message type for the
                     selected route.
-                * Allowed values: sms, mms, call, service, text
+                * Allowed values: text, sms, mms, call, chat, service
                 * Default: text
             
             - content
@@ -211,9 +225,9 @@ class Project(Entity):
                 * Optionally excludes one contact from receiving the message (only when group_id is
                     set)
             
-            - is_template (bool)
+            - replace_variables (bool)
                 * Set to true to evaluate variables like [[contact.name]] in message content [(See
-                    available variables)](#variables)
+                    available variables)](#variables) (`is_template` parameter also accepted)
                 * Default: false
             
             - track_clicks (boolean)
@@ -299,7 +313,7 @@ class Project(Entity):
             - message_type
                 * Type of message to send. If `text`, will use the default text message type for the
                     selected route.
-                * Allowed values: sms, mms, chat, text
+                * Allowed values: text, sms, mms, call, chat, service
                 * Default: text
             
             - route_id
@@ -327,9 +341,9 @@ class Project(Entity):
             - label_ids (array)
                 * Array of IDs of labels to add to each message (maximum 5)
             
-            - is_template (bool)
+            - replace_variables (bool)
                 * Set to true to evaluate variables like [[contact.name]] in message content [(See
-                    available variables)](#variables)
+                    available variables)](#variables) (`is_template` parameter also accepted)
                 * Default: false
             
             - track_clicks (boolean)
@@ -435,6 +449,9 @@ class Project(Entity):
         messages approximately once every 15 seconds, so it is not possible to control the exact
         second at which a scheduled message is sent.
         
+        Only one of the parameters group_id, to_number, and contact_id
+        should be provided.
+        
         With `message_type`=`service`, schedules an automated service (such
         as a poll) to be invoked for a group or list of phone numbers. Any service that can be
         triggered for a contact can be scheduled via this method, whether or not the service
@@ -445,20 +462,21 @@ class Project(Entity):
             
             - message_type
                 * Type of message to send
-                * Allowed values: sms, ussd, call, service
-                * Default: sms
+                * Allowed values: text, sms, mms, ussd, call, chat, service
+                * Default: text
             
             - content
                 * Content of the message to schedule
-                * Required if sending SMS message
+                * Required if sending text message
             
             - group_id
                 * ID of the group to send the message to
-                * Required if to_number not set
             
             - to_number (string)
                 * Phone number to send the message to
-                * Required if group_id not set
+            
+            - contact_id (string)
+                * ID of the contact to send the message to
             
             - start_time (UNIX timestamp)
                 * The time that the message will be sent (or first sent for recurring messages)
@@ -523,8 +541,9 @@ class Project(Entity):
                     destination URL.
                     If null, the short links will not expire.
             
-            - is_template (bool)
+            - replace_variables (bool)
                 * Set to true to evaluate variables like [[contact.name]] in message content
+                    (`is_template` parameter also accepted)
                 * Default: false
             
             - media_urls (array)
@@ -544,8 +563,8 @@ class Project(Entity):
                     itself.
             
             - timezone_id
-                * TZ database timezone ID; see
-                    <http://en.wikipedia.org/wiki/List_of_tz_database_time_zones>
+                * TZ database timezone ID; see [List of tz database time zones Wikipedia
+                    article](http://en.wikipedia.org/wiki/List_of_tz_database_time_zones).
                 * Default: project default timezone
             
             - end_time (UNIX timestamp)
@@ -564,6 +583,164 @@ class Project(Entity):
         """
         from .scheduledmessage import ScheduledMessage
         return ScheduledMessage(self._api, self._api.doRequest("POST", self.getBaseApiPath() + "/scheduled", options))
+
+    def createRelativeScheduledMessage(self, **options):
+        """
+        Creates a relative scheduled message. This allows scheduling messages on a different date
+        for each contact, for example on their birthday, a certain number of days before an
+        appointment, or a certain number of days after enrolling in a campaign.
+        
+        Telerivet will automatically create a
+        [ScheduledMessage](#ScheduledMessage) for each contact matching a RelativeScheduledMessage.
+        
+        Relative scheduled messages can be created for a group or an
+        individual contact, although dynamic groups are not supported. Only one of the parameters
+        group_id, to_number, and contact_id should be provided.
+        
+        With message_type=service, schedules an automated service (such as a
+        poll). Any service that can be triggered for a contact can be scheduled via this method,
+        whether or not the service actually sends a message.
+        
+        Arguments:
+              * Required
+            
+            - message_type
+                * Type of message to send
+                * Allowed values: text, sms, mms, call, chat, service
+                * Default: text
+            
+            - content
+                * Content of the message to schedule
+                * Required if sending text message
+            
+            - group_id
+                * ID of the group to send the message to. Dynamic groups are not supported.
+            
+            - to_number (string)
+                * Phone number to send the message to
+            
+            - contact_id (string)
+                * ID of the contact to send the message to
+            
+            - time_of_day
+                * Time of day when scheduled messages will be sent in HH:MM format (with hours from
+                    00 to 23)
+                * Required
+            
+            - timezone_id
+                * TZ database timezone ID; see [List of tz database time zones Wikipedia
+                    article](http://en.wikipedia.org/wiki/List_of_tz_database_time_zones).
+                * Default: project default timezone
+            
+            - date_variable
+                * Custom contact variable storing date or date/time values relative to which
+                    messages will be scheduled.
+                * Required
+            
+            - offset_scale
+                * The type of interval (day/week/month/year) that will be used to adjust the
+                    scheduled date relative to the date stored in the contact's date_variable, when
+                    offset_count is non-zero (D=day, W=week, M=month, Y=year)
+                * Allowed values: D, W, M, Y
+                * Default: D
+            
+            - offset_count (int)
+                * The number of days/weeks/months/years to adjust the date of the scheduled message
+                    relative relative to the date stored in the custom contact variable identified by
+                    the date_variable parameter. May be positive, negative, or zero.
+                * Default: 0
+            
+            - rrule
+                * A recurrence rule describing the how the schedule repeats, e.g. 'FREQ=MONTHLY' or
+                    'FREQ=WEEKLY;INTERVAL=2'; see <https://tools.ietf.org/html/rfc2445#section-4.3.10>.
+                    (UNTIL is ignored; use end_time parameter instead).
+                * Default: COUNT=1 (one-time scheduled message, does not repeat)
+            
+            - route_id
+                * ID of the phone or route to send the message from
+                * Default: default sender route ID
+            
+            - service_id
+                * Service to invoke for each recipient (when `message_type` is `call` or `service`)
+                * Required if message_type is service
+            
+            - audio_url
+                * The URL of an MP3 file to play when the contact answers the call (when
+                    `message_type` is `call`).
+                    
+                    If `audio_url` is provided, the text-to-speech voice is not used to say
+                    `content`, although you can optionally use `content` to indicate the script for the
+                    audio.
+                    
+                    For best results, use an MP3 file containing only speech. Music is not
+                    recommended because the audio quality will be low when played over a phone line.
+            
+            - tts_lang
+                * The language of the text-to-speech voice (when `message_type` is `call`)
+                * Allowed values: en-US, en-GB, en-GB-WLS, en-AU, en-IN, da-DK, nl-NL, fr-FR, fr-CA,
+                    de-DE, is-IS, it-IT, pl-PL, pt-BR, pt-PT, ru-RU, es-ES, es-US, sv-SE
+                * Default: en-US
+            
+            - tts_voice
+                * The name of the text-to-speech voice (when message_type=call)
+                * Allowed values: female, male
+                * Default: female
+            
+            - track_clicks (boolean)
+                * If true, URLs in the message content will automatically be replaced with unique
+                    short URLs.
+                * Default: false
+            
+            - short_link_params (dict)
+                *
+                    If `track_clicks` is true, `short_link_params` may be used to specify
+                    custom parameters for each short link in the message. The following parameters are
+                    supported:
+                    
+                    `domain` (string): A custom short domain name to use for the short
+                    links. The domain name must already be registered for your project or organization.
+                    
+                    `expiration_sec` (integer): The number of seconds after the message is
+                    created (queued to send) when the short links will stop forwarding to the
+                    destination URL.
+                    If null, the short links will not expire.
+            
+            - replace_variables (bool)
+                * Set to true to evaluate variables like [[contact.name]] in message content
+                * Default: false
+            
+            - media_urls (array)
+                * URLs of media files to attach to the text message. If `message_type` is `sms`,
+                    short links to each media URL will be appended to the end of the content (separated
+                    by a new line).
+            
+            - route_params (dict)
+                * Route-specific parameters to use when sending the message. The parameters object
+                    may have keys matching the `phone_type` field of a phone (basic route) that may be
+                    used to send the message. The corresponding value is an object with route-specific
+                    parameters to use when sending a message with that type of route.
+            
+            - label_ids (array)
+                * Array of IDs of labels to add to the sent messages (maximum 5). Does not apply
+                    when `message_type`=`service`, since the labels are determined by the service
+                    itself.
+            
+            - end_time (UNIX timestamp)
+                * Time after which a recurring message will stop (not applicable to non-recurring
+                    scheduled messages)
+            
+            - end_time_offset (int)
+                * Number of seconds from now until the recurring message will stop
+            
+            - vars (dict)
+                * Custom variables to set for this relative scheduled message, which will be copied
+                    to each message sent from this scheduled message
+          
+        Returns:
+            RelativeScheduledMessage
+        """
+        from .relativescheduledmessage import RelativeScheduledMessage
+        return RelativeScheduledMessage(self._api, self._api.doRequest("POST", self.getBaseApiPath() + "/relative_scheduled", options))
 
     def receiveMessage(self, **options):
         """
@@ -830,7 +1007,7 @@ class Project(Entity):
 
     def queryPhones(self, **options):
         """
-        Queries phones within the given project.
+        Queries basic routes within the given project.
         
         Arguments:
             
@@ -876,7 +1053,7 @@ class Project(Entity):
 
     def getPhoneById(self, id):
         """
-        Retrieves the phone with the given ID.
+        Retrieves the basic route with the given ID.
         
         Arguments:
           - id
@@ -891,7 +1068,7 @@ class Project(Entity):
 
     def initPhoneById(self, id):
         """
-        Initializes the phone with the given ID without making an API request.
+        Initializes the basic route with the given ID without making an API request.
         
         Arguments:
           - id
@@ -919,7 +1096,7 @@ class Project(Entity):
             
             - message_type
                 * Filter messages by message_type
-                * Allowed values: sms, mms, ussd, call, service
+                * Allowed values: sms, mms, ussd, ussd_session, call, chat, service
             
             - source
                 * Filter messages by source
@@ -1121,50 +1298,44 @@ class Project(Entity):
                     
                     Tasks for contacts:
                     
-                    - `update_contact_var`
-                    - `add_group_members`
-                    - `remove_group_members`
-                    - `set_conversation_status`
-                    - `set_send_blocked`
-                    - `apply_service_to_contacts`
-                    - `delete_contacts`
-                    - `export_contacts`
+                    - update_contact_var
+                    - add_group_members
+                    - remove_group_members
+                    - set_conversation_status
+                    - set_send_blocked
+                    - apply_service_to_contacts
+                    - delete_contacts
+                    - export_contacts
                     
                     Tasks for data rows:
                     
-                    - `update_row_var`
-                    - `apply_service_to_rows`
-                    - `delete_rows`
-                    - `export_rows`
+                    - update_row_var
+                    - apply_service_to_rows
+                    - delete_rows
+                    - export_rows
                     
                     Tasks for messages:
                     
-                    - `cancel_messages`
-                    - `resend_messages`
-                    - `retry_message_services`
-                    - `apply_service_to_messages`
-                    - `add_label`
-                    - `remove_label`
-                    - `update_message_var`
-                    - `delete_messages`
-                    - `export_messages`
-                * Allowed values: update_contact_var, delete_contacts, add_group_members,
-                    remove_group_members, set_conversation_status, set_send_blocked,
-                    apply_service_to_contacts, update_row_var, delete_rows, apply_service_to_rows,
-                    delete_messages, cancel_messages, resend_messages, retry_message_services,
-                    apply_service_to_messages, add_label, remove_label, update_message_var,
-                    export_messages, export_contacts, export_rows
+                    - cancel_messages
+                    - resend_messages
+                    - retry_message_services
+                    - apply_service_to_messages
+                    - add_label
+                    - remove_label
+                    - update_message_var
+                    - delete_messages
+                    - export_messages
                 * Required
             
             - task_params (dict)
                 * Parameters applied to all matching rows (specific to `task_type`).
                     
-                    **`apply_service_to_contacts`**,
-                    **`apply_service_to_messages`**, **`apply_service_to_rows`**:
+                    **apply_service_to_contacts**,
+                    **apply_service_to_messages**, **apply_service_to_rows**:
                     <table>
-                    <tr><td> `service_id` </td> <td> The ID of the
-                    service to apply (string) </td></tr>
-                    <tr><td> `variables` </td> <td> Optional object
+                    <tr><td> service_id </td> <td> The ID of the service
+                    to apply (string) </td></tr>
+                    <tr><td> variables </td> <td> Optional object
                     containing up to 25 temporary variable names and their corresponding values to set
                     when invoking the service. Values may be strings, numbers, or boolean (true/false).
                     String values may be up to 4096 bytes in length. Arrays and objects are not
@@ -1174,49 +1345,49 @@ class Project(Entity):
                     JavaScript variable like $name (with a leading $ character). (object) </td></tr>
                     </table>
                     <br />
-                    **`update_contact_var`**, **`update_message_var`**,
-                    **`update_row_var`**:
+                    **update_contact_var**, **update_message_var**,
+                    **update_row_var**:
                     <table>
-                    <tr><td> `variable` </td> <td> The custom variable
+                    <tr><td> variable </td> <td> The custom variable
                     name (string) </td></tr>
-                    <tr><td> `value` </td> <td> The value to set
-                    (string, boolean, float, null) </td></tr>
+                    <tr><td> value </td> <td> The value to set (string,
+                    boolean, float, null) </td></tr>
                     </table>
                     <br />
-                    **`add_group_members`**, **`remove_group_members`**:
+                    **add_group_members**, **remove_group_members**:
                     <table>
-                    <tr><td> `group_id` </td> <td> The ID of the group
+                    <tr><td> group_id </td> <td> The ID of the group
                     (string) </td></tr>
                     </table>
                     <br />
-                    **`add_label`**, **`remove_label`**:
+                    **add_label**, **remove_label**:
                     <table>
-                    <tr><td> `label_id` </td> <td> The ID of the label
+                    <tr><td> label_id </td> <td> The ID of the label
                     (string) </td></tr>
                     </table>
                     <br />
-                    **`resend_messages`**:
+                    **resend_messages**:
                     <table>
-                    <tr><td> `route_id` </td> <td> ID of the new route
-                    to use, or null to use the original route (string) </td></tr>
+                    <tr><td> route_id </td> <td> ID of the new route to
+                    use, or null to use the original route (string) </td></tr>
                     </table>
                     <br />
-                    **`set_send_blocked`**:
+                    **set_send_blocked**:
                     <table>
-                    <tr><td> `send_blocked` </td> <td> `true` to block
-                    sending messages, `false` to unblock sending messages (boolean) </td></tr>
+                    <tr><td> send_blocked </td> <td> true to block
+                    sending messages, false to unblock sending messages (boolean) </td></tr>
                     </table>
                     <br />
-                    **`set_conversation_status`**:
+                    **set_conversation_status**:
                     <table>
-                    <tr><td> `conversation_status` </td> <td> "active",
+                    <tr><td> conversation_status </td> <td> "active",
                     "handled", or "closed" (string) </td></tr>
                     </table>
                     <br />
-                    **`export_contacts`**, **`export_messages`**,
-                    **`export_rows`**:
+                    **export_contacts**, **export_messages**,
+                    **export_rows**:
                     <table>
-                    <tr><td>`storage_id` </td> <td> ID of a storage
+                    <tr><td>storage_id </td> <td> ID of a storage
                     provider where the CSV file will be saved. (string)
                     
                     Currently only AWS S3 is supported as a storage
@@ -1230,15 +1401,15 @@ class Project(Entity):
                     Direct downloads are not supported when
                     exporting data via the API.
                     (string) </td></tr>
-                    <tr><td>`filename` </td> <td> Path within the
-                    storage backend where the CSV file will be saved </td></tr>
-                    <tr><td>`column_ids` </td> <td> IDs of columns to
-                    save in the CSV file. If not provided, all default columns will be saved. (array of
+                    <tr><td>filename </td> <td> Path within the storage
+                    backend where the CSV file will be saved </td></tr>
+                    <tr><td>column_ids </td> <td> IDs of columns to save
+                    in the CSV file. If not provided, all default columns will be saved. (array of
                     strings, optional) </td></tr>
                     </table>
                     <br />
-                    **`delete_contacts`**, **`delete_messages`**,
-                    **`delete_rows`**, **`cancel_messages`**, **`retry_message_services`**: <br />
+                    **delete_contacts**, **delete_messages**,
+                    **delete_rows**, **cancel_messages**, **retry_message_services**: <br />
                     No parameters.
             
             - filter_type
@@ -1626,7 +1797,7 @@ class Project(Entity):
             
             - message_type
                 * Filter scheduled messages by message_type
-                * Allowed values: sms, mms, ussd, call, service
+                * Allowed values: sms, mms, ussd, ussd_session, call, chat, service
             
             - time_created (UNIX timestamp)
                 * Filter scheduled messages by time_created
@@ -1635,6 +1806,9 @@ class Project(Entity):
             - next_time (UNIX timestamp)
                 * Filter scheduled messages by next_time
                 * Allowed modifiers: next_time[min], next_time[max], next_time[exists]
+            
+            - relative_scheduled_id
+                * Filter scheduled messages created for a relative scheduled message
             
             - sort
                 * Sort the results based on a field
@@ -1659,6 +1833,50 @@ class Project(Entity):
         """
         from .scheduledmessage import ScheduledMessage
         return self._api.newApiCursor(ScheduledMessage, self.getBaseApiPath() + "/scheduled", options)
+
+    def queryRelativeScheduledMessages(self, **options):
+        """
+        Queries relative scheduled messages within the given project.
+        
+        Arguments:
+            
+            - message_type
+                * Filter relative scheduled messages by message_type
+                * Allowed values: sms, mms, ussd, ussd_session, call, chat, service
+            
+            - time_created (UNIX timestamp)
+                * Filter relative scheduled messages by time_created
+                * Allowed modifiers: time_created[min], time_created[max]
+            
+            - group_id
+                * Filter relative scheduled messages sent to a group
+            
+            - contact_id
+                * Filter relative scheduled messages sent to an individual contact
+            
+            - sort
+                * Sort the results based on a field
+                * Allowed values: default
+                * Default: default
+            
+            - sort_dir
+                * Sort the results in ascending or descending order
+                * Allowed values: asc, desc
+                * Default: asc
+            
+            - page_size (int)
+                * Number of results returned per page (max 500)
+                * Default: 50
+            
+            - offset (int)
+                * Number of items to skip from beginning of result set
+                * Default: 0
+          
+        Returns:
+            APICursor (of RelativeScheduledMessage)
+        """
+        from .relativescheduledmessage import RelativeScheduledMessage
+        return self._api.newApiCursor(RelativeScheduledMessage, self.getBaseApiPath() + "/relative_scheduled", options)
 
     def getScheduledMessageById(self, id):
         """
@@ -1689,6 +1907,175 @@ class Project(Entity):
         """
         from .scheduledmessage import ScheduledMessage
         return ScheduledMessage(self._api, {'project_id': self.id, 'id': id}, False)
+
+    def getRelativeScheduledMessageById(self, id):
+        """
+        Retrieves the scheduled message with the given ID.
+        
+        Arguments:
+          - id
+              * ID of the relative scheduled message
+              * Required
+          
+        Returns:
+            RelativeScheduledMessage
+        """
+        from .relativescheduledmessage import RelativeScheduledMessage
+        return RelativeScheduledMessage(self._api, self._api.doRequest("GET", self.getBaseApiPath() + "/relative_scheduled/%s" % (id)))
+
+    def initRelativeScheduledMessageById(self, id):
+        """
+        Initializes the relative scheduled message with the given ID without making an API request.
+        
+        Arguments:
+          - id
+              * ID of the relative scheduled message
+              * Required
+          
+        Returns:
+            RelativeScheduledMessage
+        """
+        from .relativescheduledmessage import RelativeScheduledMessage
+        return RelativeScheduledMessage(self._api, {'project_id': self.id, 'id': id}, False)
+
+    def createService(self, **options):
+        """
+        Creates a new automated service.
+        
+        Only certain types of automated services can be created via the API.
+        Other types of services can only be created via the web app.
+        
+        Although Custom Actions services cannot be created directly via the
+        API, they may be converted to a template,
+        and then instances of the template can be created via this method
+        with `service_type`=`custom_template_instance`. Converting a service
+        to a template requires the Service Templates feature to be enabled
+        for the organization.
+        
+        Arguments:
+              * Required
+            
+            - name (string)
+                * Name of the service to create, which must be unique in the project. If a name is
+                    not provided, a unique default name will be generated.
+            
+            - service_type (string)
+                * Type of service to create.  The following service types can be created via the
+                    API:
+                    
+                    - incoming_message_webhook
+                    - incoming_message_script
+                    - contact_script
+                    - message_script
+                    - data_row_script
+                    - webhook_script
+                    - voice_script
+                    - ussd_script
+                    - project_script
+                    - custom_template_instance
+                    
+                    Other types of services can only be created via the web app.
+                * Required
+            
+            - config (dict)
+                * Configuration specific to the service `type`.
+                    
+                    **incoming_message_webhook**:
+                    <table>
+                    <tr><td> url </td> <td> The webhook URL that will be
+                    triggered when an incoming message is received (string) </td></tr>
+                    <tr><td> secret </td> <td> Optional string that will
+                    be passed as the `secret` POST parameter to the webhook URL. (object) </td></tr>
+                    </table>
+                    <br />
+                    
+                    **incoming_message_script, contact_script,
+                    message_script, data_row_script, webhook_script, voice_script, ussd_script,
+                    project_script**:
+                    <table>
+                    <tr><td> code </td> <td> The JavaScript code to run
+                    when the service is triggered (max 100 KB). To run code longer than 100 KB, use a
+                    Cloud Script Module. (string) </td></tr>
+                    </table>
+                    <br />
+                    
+                    **custom_template_instance**:
+                    <table>
+                    <tr><td> template_service_id </td> <td> ID of the
+                    service template (string). The service template must be available to the current
+                    project or organization.</td></tr>
+                    <tr><td> params </td> <td> Key/value pairs for all
+                    service template parameters (object). If the values satisfy the validation rules
+                    specified in the service template, they will also be copied to the `vars` property
+                    of the service. Any values not associated with service template parameters will be
+                    ignored.
+                    </td></tr>
+                    </table>
+                    <br />
+                * Required
+            
+            - vars
+                * Custom variables and values to set for this service
+            
+            - active (bool)
+                * Whether the service is initially active or inactive. Inactive services are not
+                    automatically triggered and cannot be invoked via the API.
+                * Default: 1
+            
+            - response_table_id
+                * ID of a data table where responses will be stored, or null to disable
+                    automatically storing responses. If the response_table_id parameter is not provided,
+                    a data table may automatically be created with the same name as the service if the
+                    service collects responses.
+            
+            - phone_ids (array)
+                * IDs of phones (basic routes) to associate with this service, or null to associate
+                    this service with all routes. Only applies for service types that handle incoming
+                    messages, voice calls, or USSD sessions.
+            
+            - message_types (array)
+                * Types of messages that this service should handle. Only applies to services that
+                    handle incoming messages.
+                * Allowed values: text, call, sms, mms, ussd_session, chat
+            
+            - show_action (bool)
+                * Whether to show this service in the Actions menu within the Telerivet web app when
+                    the service is active. Only applies for service types that are manually triggered.
+                * Default: 1
+            
+            - contact_number_filter
+                * If contact_number_filter is `long_number`, this service will only be triggered if
+                    the contact phone number has at least 7 digits (ignoring messages from shortcodes
+                    and alphanumeric senders). If contact_number_filter is `all`, the service will be
+                    triggered for all contact phone numbers.  Only applies to services that handle
+                    incoming messages.
+                * Allowed values: long_number, all
+                * Default: long_number
+            
+            - direction
+                * Determines whether the service handles incoming voice calls, outgoing voice calls,
+                    or both. Only applies to services that handle voice calls.
+                * Allowed values: incoming, outgoing, both
+                * Default: both
+            
+            - priority (int)
+                * A number that determines the order that services are triggered when an event
+                    occurs (e.g. when an incoming message is received). Smaller numbers are triggered
+                    first. The priority is ignored for services that are triggered directly.
+            
+            - apply_mode
+                * If apply_mode is `unhandled`, the service will not be triggered if another service
+                    has already handled the incoming message. If apply_mode is `always`, the service
+                    will always be triggered regardless of other services. Only applies to services that
+                    handle incoming messages.
+                * Allowed values: always, unhandled
+                * Default: unhandled
+          
+        Returns:
+            Service
+        """
+        from .service import Service
+        return Service(self._api, self._api.doRequest("POST", self.getBaseApiPath() + "/services", options))
 
     def queryServices(self, **options):
         """
@@ -1761,6 +2148,112 @@ class Project(Entity):
         """
         from .service import Service
         return Service(self._api, {'project_id': self.id, 'id': id}, False)
+
+    def queryServiceLogs(self, **options):
+        """
+        Queries service log entries associated with this project.
+        
+        Note: Service logs are automatically deleted and no longer available
+        via the API after approximately one month.
+        
+        Arguments:
+            
+            - service_id
+                * Filter logs generated by a particular service
+            
+            - message_id
+                * Filter service logs related to a particular message
+            
+            - contact_id
+                * Filter service logs related to a particular contact. Ignored if using the
+                    message_id parameter.
+            
+            - time_created (UNIX timestamp)
+                * Filter service logs by the time they were created
+                * Allowed modifiers: time_created[min], time_created[max]
+            
+            - execution_stats (bool)
+                * Show detailed execution stats for each log entry, if available.
+            
+            - sort_dir
+                * Sort the results in ascending or descending order
+                * Allowed values: asc, desc
+                * Default: asc
+            
+            - page_size (int)
+                * Number of results returned per page (max 500)
+                * Default: 50
+            
+            - offset (int)
+                * Number of items to skip from beginning of result set
+                * Default: 0
+          
+        Returns:
+            APICursor (of dict)
+        
+        Returned Item Properties:
+            - time_created (UNIX timestamp)
+                * The time when the log entry was created
+            
+            - content
+                * The text logged
+            
+            - elapsed_ms (int)
+                * Elapsed time in milliseconds, if available.
+            
+            - service_id
+                * ID of the service associated with this log entry. Not returned when querying log
+                    entries for a particular service.
+            
+            - message_id
+                * ID of the message associated with this log entry. Not returned when querying log
+                    entries for a particular message.
+            
+            - contact_id
+                * ID of the contact associated with this log entry. Not returned when querying log
+                    entries for a particular message or contact.
+            
+            - api_request_count (int)
+                * The total number of API requests triggered via the Cloud Script API. (Only
+                    provided if execution_stats=true.)
+            
+            - api_request_ms (int)
+                * The total execution time of all API requests triggered via the Cloud Script API.
+                    (Only provided if execution_stats=true.)
+            
+            - http_request_count (int)
+                * The total number of external HTTP requests triggered via the Cloud Script API.
+                    (Only provided if execution_stats=true.)
+            
+            - http_request_ms (int)
+                * The total execution time of all external HTTP requests triggered via the Cloud
+                    Script API. (Only provided if execution_stats=true.)
+            
+            - webhook_count (int)
+                * The total number of Webhook API requests triggered. (Only provided if
+                    execution_stats=true.)
+            
+            - requests (array)
+                *  Details about each API request, external HTTP request, and Cloud Script Module
+                    loaded via the Cloud Script API. (Only provided if execution_stats=true.)
+                    
+                    Each item in the array has the following properties:
+                    
+                    - type (string): `api_request`, `http_request`, or
+                    `module_load`
+                    - resource (string): A string specific to the type of
+                    request.
+                    For module_load, this is the module path. For
+                    api_request, it contains the HTTP
+                    method, path, and query string. For http_request, it
+                    contains the HTTP method and
+                    URL.
+                    - elapsed_ms (int): Number of milliseconds elapsed in
+                    fetching
+                    this resource
+                    - status_code (int): Response status code, if available
+        """
+        return self._api.newApiCursor(None, self.getBaseApiPath() + "/service_logs", options)
 
     def queryRoutes(self, **options):
         """
@@ -1941,8 +2434,8 @@ class Project(Entity):
             
             - type (int)
                 * Field type
-                * Allowed values: text, long_text, phone_number, email, url, audio, date, date_time,
-                    number, boolean, select
+                * Allowed values: text, long_text, secret, phone_number, email, url, audio, date,
+                    date_time, number, boolean, checkbox, select, radio
             
             - order (int)
                 * Order in which to display the field
@@ -1996,8 +2489,8 @@ class Project(Entity):
             
             - type (string)
                 * Field type
-                * Allowed values: text, long_text, phone_number, email, url, audio, date, date_time,
-                    number, boolean, select
+                * Allowed values: text, long_text, secret, phone_number, email, url, audio, date,
+                    date_time, number, boolean, checkbox, select, radio
             
             - order (int)
                 * Order in which to display the field

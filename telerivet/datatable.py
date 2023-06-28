@@ -170,8 +170,8 @@ class DataTable(Entity):
             
             - type (string)
                 * Field type
-                * Allowed values: text, long_text, phone_number, email, url, audio, date, date_time,
-                    number, boolean, select
+                * Allowed values: text, long_text, secret, phone_number, email, url, audio, date,
+                    date_time, number, boolean, checkbox, select, radio
             
             - order (int)
                 * Order in which to display the field

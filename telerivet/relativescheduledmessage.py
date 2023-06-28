@@ -1,18 +1,52 @@
 
 from .entity import Entity
 
-class ScheduledMessage(Entity):
+class RelativeScheduledMessage(Entity):
     """
-    Represents a scheduled message within Telerivet.
+    A relative scheduled message is a message that is scheduled relative to a date stored as a
+    custom field for each recipient contact.
+    This allows scheduling messages on a different date for each contact, for
+    example on their birthday, a certain number of days before an appointment, or a certain
+    number of days after enrolling in a campaign.
+    
+    Telerivet will automatically create a [ScheduledMessage](#ScheduledMessage)
+    for each contact matching a RelativeScheduledMessage.
+    
+    Any service that can be manually triggered for a contact (including polls)
+    may also be scheduled via a relative scheduled message, whether or not the service actually
+    sends a message.
     
     Fields:
     
       - id (string, max 34 characters)
-          * ID of the scheduled message
+          * ID of the relative scheduled message
           * Read-only
       
       - content
-          * Text content of the scheduled message
+          * Text content of the relative scheduled message
+          * Updatable via API
+      
+      - time_of_day
+          * Time of day when scheduled messages will be sent in HH:MM format (with hours from 00
+              to 23)
+          * Updatable via API
+      
+      - date_variable
+          * Custom contact variable storing date or date/time values relative to which messages
+              will be scheduled.
+          * Updatable via API
+      
+      - offset_scale
+          * The type of interval (day/week/month/year) that will be used to adjust the scheduled
+              date relative to the date stored in the contact's date_variable, when offset_count is
+              non-zero (D=day, W=week, M=month, Y=year)
+          * Allowed values: D, W, M, Y
+          * Updatable via API
+      
+      - offset_count (int)
+          * The number of days/weeks/months/years to adjust the date of the scheduled message
+              relative relative to the date stored in the contact's date_variable. May be positive,
+              negative, or zero.
           * Updatable via API
       
       - rrule
@@ -21,47 +55,32 @@ class ScheduledMessage(Entity):
               [RFC2445](https://tools.ietf.org/html/rfc2445#section-4.3.10).
           * Updatable via API
       
+      - end_time (UNIX timestamp)
+          * Time after which recurring messages will stop (not applicable to non-recurring
+              scheduled messages)
+          * Updatable via API
+      
       - timezone_id
           * Timezone ID used to compute times for recurring messages; see [List of tz database
               time zones Wikipedia
               article](http://en.wikipedia.org/wiki/List_of_tz_database_time_zones).
           * Updatable via API
       
-      - recipients (array of objects)
-          * List of recipients. Each recipient is an object with a string `type` property, which
-              may be `"phone_number"`, `"group"`, or `"filter"`.
-              
-              If the type is `"phone_number"`, the `phone_number` property will
-              be set to the recipient's phone number.
-              
-              If the type is `"group"`, the `group_id` property will be set to
-              the ID of the group, and the `group_name` property will be set to the name of the
-              group.
-              
-              If the type is `"filter"`, the `filter_type` property (string) and
-              `filter_params` property (object) describe the filter used to send the broadcast. (API
-              clients should not rely on a particular value or format of the `filter_type` or
-              `filter_params` properties, as they may change without notice.)
-          * Read-only
-      
       - recipients_str
-          * A string with a human readable description of the first few recipients (possibly
-              truncated)
+          * A string with a human readable description of the recipient
           * Read-only
       
       - group_id
           * ID of the group to send the message to (null if the recipient is an individual
-              contact, or if there are multiple recipients)
+              contact)
           * Updatable via API
       
       - contact_id
-          * ID of the contact to send the message to (null if the recipient is a group, or if
-              there are multiple recipients)
+          * ID of the contact to send the message to (null if the recipient is a group)
           * Updatable via API
       
       - to_number
-          * Phone number to send the message to (null if the recipient is a group, or if there
-              are multiple recipients)
+          * Phone number to send the message to (null if the recipient is a group)
           * Updatable via API
       
       - route_id
@@ -94,30 +113,7 @@ class ScheduledMessage(Entity):
           * Read-only
       
       - time_created (UNIX timestamp)
-          * Time the scheduled message was created in Telerivet
-          * Read-only
-      
-      - start_time (UNIX timestamp)
-          * The time that the message will be sent (or first sent for recurring messages)
-          * Updatable via API
-      
-      - end_time (UNIX timestamp)
-          * Time after which a recurring message will stop (not applicable to non-recurring
-              scheduled messages)
-          * Updatable via API
-      
-      - prev_time (UNIX timestamp)
-          * The most recent time that Telerivet has sent this scheduled message (null if it has
-              never been sent)
-          * Read-only
-      
-      - next_time (UNIX timestamp)
-          * The next upcoming time that Telerivet will sent this scheduled message (null if it
-              will not be sent again)
-          * Read-only
-      
-      - occurrences (int)
-          * Number of times this scheduled message has already been sent
+          * Time the relative scheduled message was created in Telerivet
           * Read-only
       
       - replace_variables (bool)
@@ -146,34 +142,30 @@ class ScheduledMessage(Entity):
           * Updatable via API
       
       - vars (dict)
-          * Custom variables stored for this scheduled message (copied to Message when sent)
+          * Custom variables stored for this scheduled message (copied to each ScheduledMessage
+              and Message when sent)
           * Updatable via API
       
       - label_ids (array)
           * IDs of labels to add to the Message
           * Updatable via API
       
-      - relative_scheduled_id
-          * ID of the relative scheduled message this scheduled message was created from, if
-              applicable
-          * Read-only
-      
       - project_id
-          * ID of the project this scheduled message belongs to
+          * ID of the project this relative scheduled message belongs to
           * Read-only
     """
 
     def save(self):
         """
-        Saves any fields or custom variables that have changed for this scheduled message.
+        Saves any fields or custom variables that have changed for this relative scheduled message.
         """
-        super(ScheduledMessage, self).save()
+        super(RelativeScheduledMessage, self).save()
 
     def delete(self):
         """
-        Cancels this scheduled message.
+        Deletes this relative scheduled message and any associated scheduled messages.
         """
         self._api.doRequest("DELETE", self.getBaseApiPath())
 
     def getBaseApiPath(self):
-        return "/projects/%(project_id)s/scheduled/%(id)s" % {'project_id': self.project_id, 'id': self.id} 
+        return "/projects/%(project_id)s/relative_scheduled/%(id)s" % {'project_id': self.project_id, 'id': self.id} 

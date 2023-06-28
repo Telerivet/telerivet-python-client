@@ -124,7 +124,10 @@ class APICursor:
             self.pos += 1
             self.offset += 1
             cls = self.item_cls
-            return cls(self.api, item_data, True)
+            if cls:
+                return cls(self.api, item_data, True)
+            else:
+                return item_data
         else:
             raise StopIteration
 

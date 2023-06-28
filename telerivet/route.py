@@ -34,7 +34,7 @@ class Route(Entity):
 
     def save(self):
         """
-        Saves any fields or custom variables that have changed for this route.
+        Saves any fields or custom variables that have changed for this custom route.
         """
         super(Route, self).save()
 
