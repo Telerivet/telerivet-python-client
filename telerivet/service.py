@@ -47,7 +47,12 @@ class Service(Entity):
           * Read-only
       
       - vars (dict)
-          * Custom variables stored for this service
+          * Custom variables stored for this service. Variable names may be up to 32 characters
+              in length and can contain the characters a-z, A-Z, 0-9, and _.
+              Values may be strings, numbers, or boolean (true/false).
+              String values may be up to 4096 bytes in length when encoded as UTF-8.
+              Up to 100 variables are supported per object.
+              Setting a variable to null will delete the variable.
           * Updatable via API
       
       - project_id
@@ -226,7 +231,12 @@ class Service(Entity):
                 * Required
             
             - vars (dict)
-                * Custom variables stored for this contact's state
+                * Custom variables stored for this contact's state. Variable names may be up to 32
+                    characters in length and can contain the characters a-z, A-Z, 0-9, and _.
+                    Values may be strings, numbers, or boolean (true/false).
+                    String values may be up to 4096 bytes in length when encoded as UTF-8.
+                    Up to 100 variables are supported per object.
+                    Setting a variable to null will delete the variable.
           
         Returns:
             ContactServiceState

@@ -43,7 +43,12 @@ class Project(Entity):
           * Updatable via API
       
       - vars (dict)
-          * Custom variables stored for this project
+          * Custom variables stored for this project. Variable names may be up to 32 characters
+              in length and can contain the characters a-z, A-Z, 0-9, and _.
+              Values may be strings, numbers, or boolean (true/false).
+              String values may be up to 4096 bytes in length when encoded as UTF-8.
+              Up to 100 variables are supported per object.
+              Setting a variable to null will delete the variable.
           * Updatable via API
       
       - organization_id (string, max 34 characters)
@@ -113,14 +118,25 @@ class Project(Entity):
             
             - media_urls (array)
                 * URLs of media files to attach to the text message. If `message_type` is `sms`,
-                    short links to each media URL will be appended to the end of the content (separated
-                    by a new line).
+                    short links to each URL will be appended to the end of the content (separated by a
+                    new line).
+                    
+                    
+                    By default, each file must have a https:// or http:// URL, which requires the file
+                    to be uploaded somewhere that is accessible via the internet. For media files that
+                    are not already accessible via the internet, the media_urls parameter also supports
+                    data URIs with the file data encoded via Base64 (e.g. "data:image/png;base64,..."),
+                    with a maximum file size of 2 MB. To send media via data URIs, contact Telerivet to
+                    request enabling the data URIs feature for your project.
             
             - route_params (dict)
-                * Route-specific parameters for the message. The parameters object should have one
-                    or more keys matching the `phone_type` field of a phone (basic route) that may be
-                    used to send the message. The corresponding value should be an object with
-                    route-specific parameters to use if the message is sent by that type of route.
+                * Route-specific parameters for the message.
+                    
+                    When sending messages via chat apps such as WhatsApp, the route_params
+                    parameter can be used to send messages with app-specific features such as quick
+                    replies and link buttons.
+                    
+                    For more details, see [Route-Specific Parameters](#route_params).
             
             - label_ids (array)
                 * List of IDs of labels to add to this message
@@ -253,15 +269,26 @@ class Project(Entity):
                 * URLs of media files to attach to the text message. If `message_type` is `sms`,
                     short links to each URL will be appended to the end of the content (separated by a
                     new line).
+                    
+                    
+                    By default, each file must have a https:// or http:// URL, which requires the file
+                    to be uploaded somewhere that is accessible via the internet. For media files that
+                    are not already accessible via the internet, the media_urls parameter also supports
+                    data URIs with the file data encoded via Base64 (e.g. "data:image/png;base64,..."),
+                    with a maximum file size of 2 MB. To send media via data URIs, contact Telerivet to
+                    request enabling the data URIs feature for your project.
             
             - vars (dict)
                 * Custom variables to set for each message
             
             - route_params (dict)
-                * Route-specific parameters for the messages in the broadcast. The parameters object
-                    may have keys matching the `phone_type` field of a phone (basic route) that may be
-                    used to send messages in this broadcast. The corresponding value is an object with
-                    route-specific parameters to use when sending messages with that type of route.
+                * Route-specific parameters for the messages in the broadcast.
+                    
+                    When sending messages via chat apps such as WhatsApp, the route_params
+                    parameter can be used to send messages with app-specific features such as quick
+                    replies and link buttons.
+                    
+                    For more details, see [Route-Specific Parameters](#route_params).
             
             - service_id
                 * Service to invoke for each recipient (when `message_type` is `call` or `service`)
@@ -367,14 +394,25 @@ class Project(Entity):
             
             - media_urls (array)
                 * URLs of media files to attach to the text message. If `message_type` is `sms`,
-                    short links to each media URL will be appended to the end of the content (separated
-                    by a new line).
+                    short links to each URL will be appended to the end of the content (separated by a
+                    new line).
+                    
+                    
+                    By default, each file must have a https:// or http:// URL, which requires the file
+                    to be uploaded somewhere that is accessible via the internet. For media files that
+                    are not already accessible via the internet, the media_urls parameter also supports
+                    data URIs with the file data encoded via Base64 (e.g. "data:image/png;base64,..."),
+                    with a maximum file size of 2 MB. To send media via data URIs, contact Telerivet to
+                    request enabling the data URIs feature for your project.
             
             - route_params (dict)
-                * Route-specific parameters to apply to all messages. The parameters object may have
-                    keys matching the `phone_type` field of a phone (basic route) that may be used to
-                    send messages. The corresponding value is an object with route-specific parameters
-                    to use when sending messages with that type of route.
+                * Route-specific parameters to apply to all messages.
+                    
+                    When sending messages via chat apps such as WhatsApp, the route_params
+                    parameter can be used to send messages with app-specific features such as quick
+                    replies and link buttons.
+                    
+                    For more details, see [Route-Specific Parameters](#route_params).
             
             - vars (dict)
                 * Custom variables to store with the message
@@ -548,14 +586,25 @@ class Project(Entity):
             
             - media_urls (array)
                 * URLs of media files to attach to the text message. If `message_type` is `sms`,
-                    short links to each media URL will be appended to the end of the content (separated
-                    by a new line).
+                    short links to each URL will be appended to the end of the content (separated by a
+                    new line).
+                    
+                    
+                    By default, each file must have a https:// or http:// URL, which requires the file
+                    to be uploaded somewhere that is accessible via the internet. For media files that
+                    are not already accessible via the internet, the media_urls parameter also supports
+                    data URIs with the file data encoded via Base64 (e.g. "data:image/png;base64,..."),
+                    with a maximum file size of 2 MB. To send media via data URIs, contact Telerivet to
+                    request enabling the data URIs feature for your project.
             
             - route_params (dict)
-                * Route-specific parameters to use when sending the message. The parameters object
-                    may have keys matching the `phone_type` field of a phone (basic route) that may be
-                    used to send the message. The corresponding value is an object with route-specific
-                    parameters to use when sending a message with that type of route.
+                * Route-specific parameters to use when sending the message.
+                    
+                    When sending messages via chat apps such as WhatsApp, the route_params
+                    parameter can be used to send messages with app-specific features such as quick
+                    replies and link buttons.
+                    
+                    For more details, see [Route-Specific Parameters](#route_params).
             
             - label_ids (array)
                 * Array of IDs of labels to add to the sent messages (maximum 5). Does not apply
@@ -711,14 +760,25 @@ class Project(Entity):
             
             - media_urls (array)
                 * URLs of media files to attach to the text message. If `message_type` is `sms`,
-                    short links to each media URL will be appended to the end of the content (separated
-                    by a new line).
+                    short links to each URL will be appended to the end of the content (separated by a
+                    new line).
+                    
+                    
+                    By default, each file must have a https:// or http:// URL, which requires the file
+                    to be uploaded somewhere that is accessible via the internet. For media files that
+                    are not already accessible via the internet, the media_urls parameter also supports
+                    data URIs with the file data encoded via Base64 (e.g. "data:image/png;base64,..."),
+                    with a maximum file size of 2 MB. To send media via data URIs, contact Telerivet to
+                    request enabling the data URIs feature for your project.
             
             - route_params (dict)
-                * Route-specific parameters to use when sending the message. The parameters object
-                    may have keys matching the `phone_type` field of a phone (basic route) that may be
-                    used to send the message. The corresponding value is an object with route-specific
-                    parameters to use when sending a message with that type of route.
+                * Route-specific parameters to use when sending the message.
+                    
+                    When sending messages via chat apps such as WhatsApp, the route_params
+                    parameter can be used to send messages with app-specific features such as quick
+                    replies and link buttons.
+                    
+                    For more details, see [Route-Specific Parameters](#route_params).
             
             - label_ids (array)
                 * Array of IDs of labels to add to the sent messages (maximum 5). Does not apply
@@ -756,7 +816,7 @@ class Project(Entity):
             
             - message_type
                 * Type of message
-                * Allowed values: sms, call
+                * Allowed values: sms, call, chat
                 * Default: sms
             
             - from_number
@@ -836,7 +896,12 @@ class Project(Entity):
                 * ID of one or more groups to remove this contact as a member (max 20)
             
             - vars (dict)
-                * Custom variables and values to update on the contact
+                * Custom variables and values to update on the contact. Variable names may be up to
+                    32 characters in length and can contain the characters a-z, A-Z, 0-9, and _.
+                    Values may be strings, numbers, or boolean (true/false).
+                    String values may be up to 4096 bytes in length when encoded as UTF-8.
+                    Up to 100 variables are supported per object.
+                    Setting a variable to null will delete the variable.
           
         Returns:
             Contact
@@ -2015,7 +2080,12 @@ class Project(Entity):
                 * Required
             
             - vars
-                * Custom variables and values to set for this service
+                * Custom variables and values to set for this service. Variable names may be up to
+                    32 characters in length and can contain the characters a-z, A-Z, 0-9, and _.
+                    Values may be strings, numbers, or boolean (true/false).
+                    String values may be up to 4096 bytes in length when encoded as UTF-8.
+                    Up to 100 variables are supported per object.
+                    Setting a variable to null will delete the variable.
             
             - active (bool)
                 * Whether the service is initially active or inactive. Inactive services are not
@@ -2354,8 +2424,8 @@ class Project(Entity):
             
             - status
                 * Filter transactions by status
-                * Allowed values: pending, queued, processing, successful, failed, cancelled,
-                    pending_payment, pending_approval
+                * Allowed values: pending, queued, processing, submitted, successful, failed,
+                    cancelled, pending_payment, pending_approval
             
             - sort_dir
                 * Sort the results in ascending or descending order
@@ -2422,6 +2492,9 @@ class Project(Entity):
         """
         Allows customizing how a custom contact field is displayed in the Telerivet web app.
         
+        The variable path parameter can contain the characters a-z, A-Z,
+        0-9, and _, and may be up to 32 characters in length.
+        
         Arguments:
           - variable
               * The variable name of the field to create or update.
@@ -2435,7 +2508,7 @@ class Project(Entity):
             - type (int)
                 * Field type
                 * Allowed values: text, long_text, secret, phone_number, email, url, audio, date,
-                    date_time, number, boolean, checkbox, select, radio
+                    date_time, number, boolean, checkbox, select, radio, route
             
             - order (int)
                 * Order in which to display the field
@@ -2477,6 +2550,9 @@ class Project(Entity):
         """
         Allows customizing how a custom message field is displayed in the Telerivet web app.
         
+        The variable path parameter can contain the characters a-z, A-Z,
+        0-9, and _, and may be up to 32 characters in length.
+        
         Arguments:
           - variable
               * The variable name of the field to create or update.
@@ -2490,7 +2566,7 @@ class Project(Entity):
             - type (string)
                 * Field type
                 * Allowed values: text, long_text, secret, phone_number, email, url, audio, date,
-                    date_time, number, boolean, checkbox, select, radio
+                    date_time, number, boolean, checkbox, select, radio, route
             
             - order (int)
                 * Order in which to display the field

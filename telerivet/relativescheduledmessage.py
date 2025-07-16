@@ -135,15 +135,23 @@ class RelativeScheduledMessage(Entity):
           * Read-only
       
       - route_params (dict)
-          * Route-specific parameters to use when sending the message. The parameters object may
-              have keys matching the `phone_type` field of a phone (basic route) that may be used to
-              send the message. The corresponding value is an object with route-specific parameters
-              to use when sending a message with that type of route.
+          * Route-specific parameters to use when sending the message.
+              
+              When sending messages via chat apps such as WhatsApp, the route_params
+              parameter can be used to send messages with app-specific features such as quick
+              replies and link buttons.
+              
+              For more details, see [Route-Specific Parameters](#route_params).
           * Updatable via API
       
       - vars (dict)
           * Custom variables stored for this scheduled message (copied to each ScheduledMessage
-              and Message when sent)
+              and Message when sent). Variable names may be up to 32 characters in length and can
+              contain the characters a-z, A-Z, 0-9, and _.
+              Values may be strings, numbers, or boolean (true/false).
+              String values may be up to 4096 bytes in length when encoded as UTF-8.
+              Up to 100 variables are supported per object.
+              Setting a variable to null will delete the variable.
           * Updatable via API
       
       - label_ids (array)

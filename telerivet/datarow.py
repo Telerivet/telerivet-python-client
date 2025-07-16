@@ -29,7 +29,12 @@ class DataRow(Entity):
           * Updatable via API
       
       - vars (dict)
-          * Custom variables stored for this data row
+          * Custom variables stored for this data row. Variable names may be up to 32 characters
+              in length and can contain the characters a-z, A-Z, 0-9, and _.
+              Values may be strings, numbers, or boolean (true/false).
+              String values may be up to 4096 bytes in length when encoded as UTF-8.
+              Up to 100 variables are supported per object.
+              Setting a variable to null will delete the variable.
           * Updatable via API
       
       - time_created (UNIX timestamp)

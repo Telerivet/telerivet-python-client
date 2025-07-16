@@ -39,7 +39,7 @@ class AirtimeTransaction(Entity):
       
       - status
           * Current status of airtime transaction (`successful`, `failed`, `cancelled`,
-              `queued`, `pending_approval`, or `pending_payment`)
+              `queued`, `processing`, `submitted`, `pending_approval`, or `pending_payment`)
           * Read-only
       
       - status_text
@@ -78,8 +78,17 @@ class AirtimeTransaction(Entity):
           * The ID of this transaction from an external airtime gateway provider, if available.
           * Read-only
       
+      - user_id (string, max 34 characters)
+          * ID of the Telerivet user who sent the airtime transaction (if applicable)
+          * Read-only
+      
       - vars (dict)
-          * Custom variables stored for this transaction
+          * Custom variables stored for this transaction. Variable names may be up to 32
+              characters in length and can contain the characters a-z, A-Z, 0-9, and _.
+              Values may be strings, numbers, or boolean (true/false).
+              String values may be up to 4096 bytes in length when encoded as UTF-8.
+              Up to 100 variables are supported per object.
+              Setting a variable to null will delete the variable.
           * Updatable via API
     """
 

@@ -142,14 +142,22 @@ class Broadcast(Entity):
           * Read-only
       
       - vars (dict)
-          * Custom variables stored for this broadcast
+          * Custom variables stored for this broadcast. Variable names may be up to 32
+              characters in length and can contain the characters a-z, A-Z, 0-9, and _.
+              Values may be strings, numbers, or boolean (true/false).
+              String values may be up to 4096 bytes in length when encoded as UTF-8.
+              Up to 100 variables are supported per object.
+              Setting a variable to null will delete the variable.
           * Read-only
       
       - route_params (dict)
-          * Route-specific parameters for the messages in the broadcast. The parameters object
-              may have keys matching the `phone_type` field of a phone (basic route) that may be
-              used to send messages in this broadcast. The corresponding value is an object with
-              route-specific parameters to use when sending messages with that type of route.
+          * Route-specific parameters for the messages in the broadcast.
+              
+              When sending messages via chat apps such as WhatsApp, the route_params
+              parameter can be used to send messages with app-specific features such as quick
+              replies and link buttons.
+              
+              For more details, see [Route-Specific Parameters](#route_params).
           * Read-only
       
       - price (number)

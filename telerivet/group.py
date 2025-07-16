@@ -27,8 +27,23 @@ class Group(Entity):
           * Time the group was created in Telerivet
           * Read-only
       
+      - allow_sending (bool)
+          * True if messages can be sent to this group, false otherwise.
+          * Updatable via API
+      
+      - add_time_variable (string)
+          * Variable name of a custom contact field that will automatically be set to the
+              current date/time on any contact that is added to the group. This variable will only
+              be set if the contact does not already have a value for this variable.
+          * Updatable via API
+      
       - vars (dict)
-          * Custom variables stored for this group
+          * Custom variables stored for this group. Variable names may be up to 32 characters in
+              length and can contain the characters a-z, A-Z, 0-9, and _.
+              Values may be strings, numbers, or boolean (true/false).
+              String values may be up to 4096 bytes in length when encoded as UTF-8.
+              Up to 100 variables are supported per object.
+              Setting a variable to null will delete the variable.
           * Updatable via API
       
       - project_id
