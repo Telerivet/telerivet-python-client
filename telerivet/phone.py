@@ -58,6 +58,48 @@ class Phone(Entity):
           * ID of the project this phone belongs to
           * Read-only
       
+      - validate_recipient_numbers (bool)
+          * Set to true to check that recipient phone numbers appear to be valid before sending
+              messages. Messages to invalid phone numbers will fail without being sent. Only applies
+              to phones capable of sending messages.
+          * Updatable via API
+      
+      - allowed_recipient_countries (array of strings)
+          * Array of 2-letter country codes (ISO 3166-1 alpha-2) to which this phone is allowed
+              to send messages. When null, there is no restriction on recipient countries.
+          * Updatable via API
+      
+      - send_delay (number)
+          * Number of seconds to wait after sending each message from this phone, to avoid
+              exceeding carrier rate limits.
+          * Updatable via API
+      
+      - timezone_id (string)
+          * A string specifying the time zone that will be used when implementing quiet hours or
+              estimating send times; see [List of tz database time zones Wikipedia
+              article](http://en.wikipedia.org/wiki/List_of_tz_database_time_zones). When null, the
+              project's default time zone is used.
+          * Updatable via API
+      
+      - quiet_mode (string)
+          * Controls behavior during quiet hours (see quiet_start/quiet_end). Possible values
+              are 'off' (quiet hours disabled), 'delay' (messages are delayed until quiet hours
+              end), or 'confirm' (requires manual confirmation to send during quiet hours).
+          * Allowed values: off, delay, confirm
+          * Updatable via API
+      
+      - quiet_start (string)
+          * Time of day when quiet hours begin, in HH:MM format (24-hour time) in the phone's
+              time zone. Messages sent during quiet hours are delayed or require confirmation
+              depending on quiet_mode. Only applicable when quiet_mode is not 'off'.
+          * Updatable via API
+      
+      - quiet_end (string)
+          * Time of day when quiet hours end, in HH:MM format (24-hour time) in the phone's time
+              zone. Messages sent during quiet hours are delayed or require confirmation depending
+              on quiet_mode. Only applicable when quiet_mode is not 'off'.
+          * Updatable via API
+      
       - battery (int)
           * Current battery level, on a scale from 0 to 100, as of the last time the phone
               connected to Telerivet (only present for Android phones)
@@ -105,6 +147,36 @@ class Phone(Entity):
               increase this limit, install additional SMS expansion packs in the Telerivet Gateway
               app. (only present for Android phones)
           * Read-only
+      
+      - external_account_id (string)
+          * Account ID for the external API (e.g. Twilio Account SID, Vonage API Key). Only
+              present for routes that support external API configuration. See
+              [createPhone](#Project.createPhone) for the meaning of this field for each phone type.
+          * Updatable via API
+      
+      - external_id (string)
+          * External phone/resource ID within the external API account (if applicable). Only
+              present for routes that support external API configuration.
+          * Updatable via API
+      
+      - external_config (dict)
+          * Additional configuration settings specific to the phone_type. Only present for
+              routes that support external API configuration. See
+              [createPhone](#Project.createPhone) for available settings for each phone type.
+          * Updatable via API
+      
+      - external_setup (dict)
+          * Configuration info for routes that require manual webhook setup. Only present for
+              routes that require manual configuration of callback URLs with the external provider.
+              Contains URL properties for each webhook type that needs to be configured (e.g.,
+              `incoming_message_url`, `message_status_url`, `incoming_call_url`).
+          * Read-only
+      
+      - external_secret (string)
+          * Secret/API key for the external API (e.g. Twilio Auth Token, Vonage API Secret).
+              Only applicable for routes that support external API configuration. Write-only; not
+              returned by the API when retrieving a phone.
+          * Updatable via API
     """
 
     def queryMessages(self, **options):

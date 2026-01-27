@@ -96,6 +96,11 @@ class Message(Entity):
               priority numbers first. Only defined for outgoing messages.
           * Read-only
       
+      - send_attempts (number)
+          * The number of times Telerivet has attempted to send the message. Will be greater
+              than 1 if the message has been resent. Only defined for outgoing messages.
+          * Read-only
+      
       - error_message
           * A description of the error encountered while sending a message. (This field is
               omitted from the API response if there is no error message.)

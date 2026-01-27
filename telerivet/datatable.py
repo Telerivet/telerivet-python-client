@@ -123,12 +123,12 @@ class DataTable(Entity):
         from .datarow import DataRow
         return DataRow(self._api, self._api.doRequest("POST", self.getBaseApiPath() + "/rows", options))
 
-    def getRowById(self, id):
+    def getRowById(self, row_id):
         """
         Retrieves the row in the given table with the given ID.
         
         Arguments:
-          - id
+          - row_id
               * ID of the row
               * Required
           
@@ -136,14 +136,14 @@ class DataTable(Entity):
             DataRow
         """
         from .datarow import DataRow
-        return DataRow(self._api, self._api.doRequest("GET", self.getBaseApiPath() + "/rows/%s" % (id)))
+        return DataRow(self._api, self._api.doRequest("GET", self.getBaseApiPath() + "/rows/%s" % (row_id)))
 
-    def initRowById(self, id):
+    def initRowById(self, row_id):
         """
         Initializes the row in the given table with the given ID, without making an API request.
         
         Arguments:
-          - id
+          - row_id
               * ID of the row
               * Required
           
@@ -151,7 +151,7 @@ class DataTable(Entity):
             DataRow
         """
         from .datarow import DataRow
-        return DataRow(self._api, {'project_id': self.project_id, 'table_id': self.id, 'id': id}, False)
+        return DataRow(self._api, {'project_id': self.project_id, 'table_id': self.id, 'row_id': row_id}, False)
 
     def getFields(self):
         """
@@ -192,9 +192,9 @@ class DataTable(Entity):
             
             - items (array)
                 * Array of up to 100 objects containing `value` and `label` string properties to
-                    show in the dropdown list when type is `select`. Each `value` and `label` must be
-                    between 1 and 256 characters in length.
-                * Required if type is `select`
+                    show when type is `select` or `radio`. Each `value` and `label` must be between 1
+                    and 256 characters in length.
+                * Required if type is `select` or `radio`
             
             - readonly (bool)
                 * Set to true to prevent editing the field in the Telerivet web app

@@ -40,6 +40,8 @@ class AirtimeTransaction(Entity):
       - status
           * Current status of airtime transaction (`successful`, `failed`, `cancelled`,
               `queued`, `processing`, `submitted`, `pending_approval`, or `pending_payment`)
+          * Allowed values: successful, failed, cancelled, queued, processing, submitted,
+              pending_approval, pending_payment
           * Read-only
       
       - status_text

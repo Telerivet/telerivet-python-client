@@ -52,6 +52,17 @@ class Organization(Entity):
                     contact.
                 * Default: 1
             
+            - message_retention_days (int)
+                * Number of days to retain messages in this project. Messages older than this will
+                    be automatically deleted. If null or not provided, messages will be retained
+                    forever.
+            
+            - short_link_scheme (bool)
+                * If true (the default), short links in messages will include the scheme (e.g.,
+                    'https://rvt.me/xxxxxxxxx'). If false, short links will not include the scheme
+                    (e.g., 'rvt.me/xxxxxxxxx').
+                * Default: 1
+            
             - vars
                 * Custom variables and values to set for this project
           
@@ -129,6 +140,8 @@ class Organization(Entity):
         Arguments:
           - usage_type
               * Usage type.
+              * Allowed values: phones, projects, users, contacts, messages_day, stored_messages,
+                  data_rows, api_requests_day
               * Required
           
         Returns:
@@ -187,29 +200,6 @@ class Organization(Entity):
               - intervals (array)
                   * List of objects representing each date interval containing at least one message
                       matching the filters.
-                      Each object has the following properties:
-                      
-                      <table>
-                      <tr><td> start_time </td> <td> The UNIX timestamp of the start
-                      of the interval (int) </td></tr>
-                      <tr><td> end_time </td> <td> The UNIX timestamp of the end of
-                      the interval, exclusive (int) </td></tr>
-                      <tr><td> start_date </td> <td> The date of the start of the
-                      interval in YYYY-MM-DD format (string) </td></tr>
-                      <tr><td> end_date </td> <td> The date of the end of the
-                      interval in YYYY-MM-DD format, inclusive (string) </td></tr>
-                      <tr><td> groups </td> <td> Array of groups for each
-                      combination of requested property values matching the filters (array)
-                      <br /><br />
-                      Each object has the following properties:
-                      <table>
-                      <tr><td> properties </td> <td> An object of key/value
-                      pairs for each distinct value of the requested properties (object) </td></tr>
-                      <tr><td> metrics </td> <td> An object of key/value pairs
-                      for each requested metric (object) </td></tr>
-                      </table>
-                      </td></tr>
-                      </table>
         """
         data = self._api.doRequest("GET", self.getBaseApiPath() + "/message_stats", options)
         return data

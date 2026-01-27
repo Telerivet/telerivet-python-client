@@ -42,6 +42,17 @@ class Project(Entity):
               contact.
           * Updatable via API
       
+      - message_retention_days (int)
+          * Number of days to retain messages in this project. Messages older than this will be
+              automatically deleted. If null, messages will be retained forever.
+          * Updatable via API
+      
+      - short_link_scheme (bool)
+          * If true (the default), short links in messages will include the scheme (e.g.,
+              'https://rvt.me/xxxxxxxxx'). If false, short links will not include the scheme (e.g.,
+              'rvt.me/xxxxxxxxx').
+          * Updatable via API
+      
       - vars (dict)
           * Custom variables stored for this project. Variable names may be up to 32 characters
               in length and can contain the characters a-z, A-Z, 0-9, and _.
@@ -94,7 +105,9 @@ class Project(Entity):
             
             - replace_variables (bool)
                 * Set to true to evaluate variables like [[contact.name]] in message content. [(See
-                    available variables)](#variables) (`is_template` parameter also accepted)
+                    available variables)](#variables) (`is_template` parameter also accepted). The
+                    double square brackets may also include [filters](/api/rules_engine#filters) to
+                    transform variables, such as to set a default value.
                 * Default: false
             
             - track_clicks (boolean)
@@ -116,7 +129,7 @@ class Project(Entity):
                     destination URL.
                     If null, the short links will not expire.
             
-            - media_urls (array)
+            - media_urls (array of strings)
                 * URLs of media files to attach to the text message. If `message_type` is `sms`,
                     short links to each URL will be appended to the end of the content (separated by a
                     new line).
@@ -265,7 +278,7 @@ class Project(Entity):
                     destination URL.
                     If null, the short links will not expire.
             
-            - media_urls (array)
+            - media_urls (array of strings)
                 * URLs of media files to attach to the text message. If `message_type` is `sms`,
                     short links to each URL will be appended to the end of the content (separated by a
                     new line).
@@ -392,7 +405,7 @@ class Project(Entity):
                     destination URL.
                     If null, the short links will not expire.
             
-            - media_urls (array)
+            - media_urls (array of strings)
                 * URLs of media files to attach to the text message. If `message_type` is `sms`,
                     short links to each URL will be appended to the end of the content (separated by a
                     new line).
@@ -491,7 +504,7 @@ class Project(Entity):
         should be provided.
         
         With `message_type`=`service`, schedules an automated service (such
-        as a poll) to be invoked for a group or list of phone numbers. Any service that can be
+        as a poll) to be invoked for a group or an individual contact. Any service that can be
         triggered for a contact can be scheduled via this method, whether or not the service
         actually sends a message.
         
@@ -584,7 +597,7 @@ class Project(Entity):
                     (`is_template` parameter also accepted)
                 * Default: false
             
-            - media_urls (array)
+            - media_urls (array of strings)
                 * URLs of media files to attach to the text message. If `message_type` is `sms`,
                     short links to each URL will be appended to the end of the content (separated by a
                     new line).
@@ -758,7 +771,7 @@ class Project(Entity):
                 * Set to true to evaluate variables like [[contact.name]] in message content
                 * Default: false
             
-            - media_urls (array)
+            - media_urls (array of strings)
                 * URLs of media files to attach to the text message. If `message_type` is `sms`,
                     short links to each URL will be appended to the end of the content (separated by a
                     new line).
@@ -1145,6 +1158,202 @@ class Project(Entity):
         """
         from .phone import Phone
         return Phone(self._api, {'project_id': self.id, 'id': id}, False)
+
+    def createPhone(self, **options):
+        """
+        Creates a new basic route (phone) with external API credentials.
+        
+        For some external API providers, this method automatically updates webhook URLs configured
+        with the external provider so that incoming messages/calls and call status events are routed
+        to Telerivet. In this case, if you have already configured a webhook URL with the external
+        provider, it will be overwritten. For other external API providers, webhook URLs may require
+        manual configuration in order for the route to be fully functional.
+        
+        Note: This API can only create routes that connect to external gateway APIs using your own
+        account credentials. To add Android phones, WhatsApp routes, or routes with
+        Telerivet-managed billing, use the web app instead.
+        
+        Credentials are passed via the `external_account_id`, `external_id`, `external_secret`, and
+        `external_config` parameters. The meaning of these parameters for each phone type is as
+        follows:
+        
+        **Twilio Virtual Number** (`phone_type`: twilio):
+        
+        - `external_id` (optional): The SID of your Twilio phone number (starts with 'PN'); if not
+        provided, it will be looked up by the phone_number parameter
+        - `external_account_id` (required): Your Twilio Account SID (starts with 'AC')
+        - `external_secret` (required): Your Twilio Auth Token
+        
+        **Twilio Messaging Service** (`phone_type`: twilio_messaging_service):
+        
+        - `external_id` (required): The SID of your Twilio messaging service (starts with 'MG')
+        - `external_account_id` (required): Your Twilio Account SID (starts with 'AC')
+        - `external_secret` (required): Your Twilio Auth Token
+        
+        **Twilio Shortcode** (`phone_type`: twilio_shortcode):
+        
+        - `external_id` (optional): The SID of your Twilio shortcode (starts with 'SC'); if not
+        provided, it will be looked up by the phone_number parameter
+        - `external_account_id` (required): Your Twilio Account SID (starts with 'AC')
+        - `external_secret` (required): Your Twilio Auth Token
+        
+        **Twilio Caller ID** (`phone_type`: twilio_caller_id):
+        
+        - `external_account_id` (required): Your Twilio Account SID (starts with 'AC')
+        - `external_secret` (required): Your Twilio Auth Token
+        
+        **Vonage Virtual Number or Vonage Sender ID** (`phone_type`: nexmo or nexmo_sender_id):
+        
+        - `external_account_id` (required): Your Vonage API Key
+        - `external_secret` (required): Your Vonage API Secret
+        
+        **Telesign SMS** (`phone_type`: telesign):
+        
+        - `external_account_id` (required): Your Telesign Customer ID
+        - `external_secret` (required): Your Telesign API Key
+        - `external_config.message_type`: `ARN`, `MKT`, or `OTP`
+        - `external_config.sender_type`: `one_way` (default) or `two_way`
+        
+        **Infobip SMS** (`phone_type`: infobip):
+        
+        - `external_account_id` (required): Your Infobip username
+        - `external_secret` (required): Your Infobip API key
+        - `external_config.sender_type`: `one_way` (default) or `two_way`
+        - `external_config.india_dlt_principal_entity_id`: India DLT Principal Entity ID (only
+        needed if sending to India)
+        
+        **Infobip USSD** (`phone_type`: infobip_ussd):
+        
+        - No external credentials required
+        
+        **Africa's Talking SMS** (`phone_type`: africas_talking):
+        
+        - `external_account_id` (required): Your Africa's Talking username
+        - `external_secret` (required): Your Africa's Talking API key
+        - `external_config.sender_type`: `one_way` (default) or `two_way`
+        
+        **Africa's Talking USSD** (`phone_type`: africas_talking_ussd):
+        
+        - No external credentials required
+        
+        **Simulated Phone** (`phone_type`: simulated):
+        
+        - No external credentials required
+        - Messages are simulated locally and not sent to any external provider
+        - Useful for testing
+        
+        #### Webhook URL Setup
+        
+        Some route types require manual configuration of callback URLs in the external provider's
+        dashboard. When the Phone response includes an `external_setup` object, you will need to
+        configure the webhook URLs in your provider's account settings.
+        
+        The following phone types require manual webhook setup:
+        
+        - `africas_talking`: `message_status_url` (always), `incoming_message_url` (if two_way)
+        - `africas_talking_ussd`: `incoming_call_url`
+        - `infobip_ussd`: `incoming_call_url`
+        - `twilio_messaging_service`: `incoming_message_url`
+        - `telesign` (two_way only): `incoming_message_url`
+        
+        Telerivet automatically configures webhooks for the following phone types as follows:
+        
+        - `twilio` - automatically updates incoming SMS and voice configuration for the Twilio
+        virtual number associated with the phone_number or external_id parameter
+        - `twilio_shortcode` - automatically updates incoming SMS configuration for the Twilio short
+        code associated with the phone_number or external_id parameter
+        - `nexmo` - automatically updates incoming SMS and voice configuration for the Vonage
+        virtual number matching the phone_number parameter
+        - `infobip` - automatically updates incoming SMS configuration for the Infobip virtual
+        number matching the phone_number parameter or external_id parameter
+        
+        Arguments:
+              * Required
+            
+            - name (string)
+                * Name of the basic route to create
+            
+            - phone_number (string)
+                * Phone number or sender ID
+                * Required
+            
+            - phone_type (string)
+                * Type of basic route to create. Supported values: twilio, twilio_messaging_service,
+                    twilio_shortcode, twilio_caller_id, nexmo, infobip, africas_talking,
+                    africas_talking_ussd, infobip_ussd, telesign, simulated. Other types of basic routes
+                    can only be created via the web app.
+                * Required
+            
+            - external_account_id (string)
+                * Account ID for the external API (e.g. Twilio Account SID, Vonage API Key). See the
+                    description above for the meaning of this parameter for each phone type.
+            
+            - external_id (string)
+                * External phone/resource ID within the external API account (if applicable). For
+                    `twilio` and `twilio_shortcode` routes, this is optional and will be looked up
+                    automatically from the phone_number if not provided.
+            
+            - external_secret (string)
+                * Secret/API key for the external API (e.g. Twilio Auth Token, Vonage API Secret).
+                    This value is required when creating a new route but is never returned in API
+                    responses. See the description above for the meaning of this parameter for each
+                    phone type.
+            
+            - external_config (dict)
+                * Additional configuration settings specific to the phone_type. See the description
+                    above for available settings for each phone type.
+            
+            - country
+                * 2-letter country code (ISO 3166-1 alpha-2) where phone is from. This country code
+                    is used to automatically convert phone numbers in local format to international
+                    format. If not provided, will be set to the organization's country by default.
+            
+            - send_paused (bool)
+                * True if sending messages should initially be paused, false otherwise
+                * Default:
+            
+            - timezone_id (string)
+                * A string specifying the time zone used when sending messages; see [List of tz
+                    database time zones Wikipedia
+                    article](http://en.wikipedia.org/wiki/List_of_tz_database_time_zones). When not
+                    provided, the project's default time zone is used.
+            
+            - validate_recipient_numbers (bool)
+                * Set to true to validate recipient phone numbers before sending. Messages to
+                    invalid numbers will fail without being sent.
+                * Default:
+            
+            - allowed_recipient_countries (array of strings)
+                * Array of 2-letter country codes (ISO 3166-1 alpha-2) to which this phone is
+                    allowed to send messages. If not provided, there is no restriction.
+            
+            - send_delay (number)
+                * Number of seconds to wait after sending each message, to avoid exceeding carrier
+                    rate limits.
+            
+            - quiet_mode (string)
+                * Controls behavior during quiet hours. Possible values: 'off' (disabled), 'delay'
+                    (messages delayed until quiet hours end), 'confirm' (requires manual confirmation;
+                    worker-based routes only).
+                * Allowed values: off, delay, confirm
+                * Default: off
+            
+            - quiet_start (string)
+                * Time when quiet hours begin, in HH:MM format (24-hour time). Only applicable when
+                    quiet_mode is not 'off'.
+            
+            - quiet_end (string)
+                * Time when quiet hours end, in HH:MM format (24-hour time). Only applicable when
+                    quiet_mode is not 'off'.
+            
+            - vars
+                * Custom variables and values to set for this basic route
+          
+        Returns:
+            Phone
+        """
+        from .phone import Phone
+        return Phone(self._api, self._api.doRequest("POST", self.getBaseApiPath() + "/phones", options))
 
     def queryMessages(self, **options):
         """
@@ -1774,6 +1983,116 @@ class Project(Entity):
         from .label import Label
         return Label(self._api, {'project_id': self.id, 'id': id}, False)
 
+    def queryMessageTemplates(self, **options):
+        """
+        Queries message templates within the given project.
+        
+        Arguments:
+            
+            - name
+                * Filter templates by name
+                * Allowed modifiers: name[ne], name[prefix], name[not_prefix], name[gte], name[gt],
+                    name[lt], name[lte]
+            
+            - waba_id
+                * Filter templates by WhatsApp Business Account ID
+            
+            - sort
+                * Sort the results based on a field
+                * Allowed values: default, name
+                * Default: default
+            
+            - sort_dir
+                * Sort the results in ascending or descending order
+                * Allowed values: asc, desc
+                * Default: asc
+            
+            - page_size (int)
+                * Number of results returned per page (max 500)
+                * Default: 50
+            
+            - offset (int)
+                * Number of items to skip from beginning of result set
+                * Default: 0
+          
+        Returns:
+            APICursor (of MessageTemplate)
+        """
+        from .messagetemplate import MessageTemplate
+        return self._api.newApiCursor(MessageTemplate, self.getBaseApiPath() + "/message_templates", options)
+
+    def createMessageTemplate(self, **options):
+        """
+        Creates a new message template that can be used when composing or scheduling messages.
+        
+        Arguments:
+              * Required
+            
+            - name (string)
+                * Name of the template (max 127 characters)
+                * Required
+            
+            - content (string)
+                * Content of the message template (max 2000 characters)
+                * Required
+            
+            - track_clicks (bool)
+                * If true, URLs in the content will be replaced with short links that track clicks.
+                    Requires a plan with click tracking enabled.
+                * Default:
+            
+            - short_link_params (dict)
+                * If `track_clicks` is true, `short_link_params` may be used to specify custom
+                    parameters for each short link.
+            
+            - attachments (array)
+                * List of attachment objects with file URLs to include with the template
+            
+            - route_params (dict)
+                * Route-specific parameters to use when sending messages with this template.
+                    
+                    When sending messages via chat apps such as WhatsApp, the route_params
+                    parameter can be used to send messages with app-specific features such as quick
+                    replies and link buttons.
+                    
+                    For more details, see [Route-Specific Parameters](#route_params).
+          
+        Returns:
+            MessageTemplate
+        """
+        from .messagetemplate import MessageTemplate
+        return MessageTemplate(self._api, self._api.doRequest("POST", self.getBaseApiPath() + "/message_templates", options))
+
+    def getMessageTemplateById(self, id):
+        """
+        Retrieves the message template with the given ID.
+        
+        Arguments:
+          - id
+              * ID of the message template
+              * Required
+          
+        Returns:
+            MessageTemplate
+        """
+        from .messagetemplate import MessageTemplate
+        return MessageTemplate(self._api, self._api.doRequest("GET", self.getBaseApiPath() + "/message_templates/%s" % (id)))
+
+    def initMessageTemplateById(self, id):
+        """
+        Initializes the message template with the given ID without making an API request.
+        
+        Arguments:
+          - id
+              * ID of the message template
+              * Required
+          
+        Returns:
+            MessageTemplate
+        """
+        from .messagetemplate import MessageTemplate
+        return MessageTemplate(self._api, {'project_id': self.id, 'id': id}, False)
+
     def queryDataTables(self, **options):
         """
         Queries data tables within the given project.
@@ -2003,19 +2322,138 @@ class Project(Entity):
         from .relativescheduledmessage import RelativeScheduledMessage
         return RelativeScheduledMessage(self._api, {'project_id': self.id, 'id': id}, False)
 
+    def queryScheduledServices(self, **options):
+        """
+        Queries scheduled services within the given project.
+        
+        Arguments:
+            
+            - service_id
+                * Filter scheduled services by the service ID
+            
+            - time_created (UNIX timestamp)
+                * Filter scheduled services by time_created
+                * Allowed modifiers: time_created[min], time_created[max]
+            
+            - next_time (UNIX timestamp)
+                * Filter scheduled services by next_time
+                * Allowed modifiers: next_time[min], next_time[max]
+            
+            - sort
+                * Sort the results based on a field
+                * Allowed values: default, next_time
+                * Default: default
+            
+            - sort_dir
+                * Sort the results in ascending or descending order
+                * Allowed values: asc, desc
+                * Default: asc
+            
+            - page_size (int)
+                * Number of results returned per page (max 500)
+                * Default: 50
+            
+            - offset (int)
+                * Number of items to skip from beginning of result set
+                * Default: 0
+          
+        Returns:
+            APICursor (of ScheduledService)
+        """
+        from .scheduledservice import ScheduledService
+        return self._api.newApiCursor(ScheduledService, self.getBaseApiPath() + "/scheduled_services", options)
+
+    def scheduleService(self, **options):
+        """
+        Schedules a service to be triggered at a specified time.
+        
+        Only services that can be triggered for the project context and
+        handle the default event can be scheduled. This includes services with types
+        `scheduled_actions`, `scheduled_script`, and other service types that support project-level
+        triggering.
+        
+        (Note: To schedule services that are triggered for a contact,
+        [project.scheduleMessage](#Project.scheduleMessage) should be used instead with
+        `message_type`=`service`.)
+        
+        Arguments:
+              * Required
+            
+            - service_id
+                * ID of the service to schedule
+                * Required
+            
+            - start_time (UNIX timestamp)
+                * The time that the service will be triggered (or first triggered for recurring
+                    scheduled services)
+                * Required if start_time_offset not set
+            
+            - start_time_offset (int)
+                * Number of seconds from now to trigger the service
+            
+            - rrule
+                * A recurrence rule describing how the schedule repeats, e.g. 'FREQ=MONTHLY' or
+                    'FREQ=WEEKLY;INTERVAL=2'; see <https://tools.ietf.org/html/rfc2445#section-4.3.10>.
+                    (UNTIL is ignored; use end_time parameter instead).
+                * Default: COUNT=1 (one-time scheduled service, does not repeat)
+            
+            - timezone_id
+                * TZ database timezone ID; see [List of tz database time zones Wikipedia
+                    article](http://en.wikipedia.org/wiki/List_of_tz_database_time_zones).
+                * Default: project default timezone
+            
+            - end_time (UNIX timestamp)
+                * Time after which a recurring scheduled service will stop (not applicable to
+                    non-recurring scheduled services)
+            
+            - end_time_offset (int)
+                * Number of seconds from now until the recurring scheduled service will stop
+            
+            - vars (dict)
+                * Custom variables to store for this scheduled service
+          
+        Returns:
+            ScheduledService
+        """
+        from .scheduledservice import ScheduledService
+        return ScheduledService(self._api, self._api.doRequest("POST", self.getBaseApiPath() + "/scheduled_services", options))
+
+    def getScheduledServiceById(self, id):
+        """
+        Retrieves the scheduled service with the given ID.
+        
+        Arguments:
+          - id
+              * ID of the scheduled service
+              * Required
+          
+        Returns:
+            ScheduledService
+        """
+        from .scheduledservice import ScheduledService
+        return ScheduledService(self._api, self._api.doRequest("GET", self.getBaseApiPath() + "/scheduled_services/%s" % (id)))
+
+    def initScheduledServiceById(self, id):
+        """
+        Initializes the scheduled service with the given ID without making an API request.
+        
+        Arguments:
+          - id
+              * ID of the scheduled service
+              * Required
+          
+        Returns:
+            ScheduledService
+        """
+        from .scheduledservice import ScheduledService
+        return ScheduledService(self._api, {'project_id': self.id, 'id': id}, False)
+
     def createService(self, **options):
         """
         Creates a new automated service.
         
         Only certain types of automated services can be created via the API.
         Other types of services can only be created via the web app.
-        
-        Although Custom Actions services cannot be created directly via the
-        API, they may be converted to a template,
-        and then instances of the template can be created via this method
-        with `service_type`=`custom_template_instance`. Converting a service
-        to a template requires the Service Templates feature to be enabled
-        for the organization.
         
         Arguments:
               * Required
@@ -2028,55 +2466,37 @@ class Project(Entity):
                 * Type of service to create.  The following service types can be created via the
                     API:
                     
+                    - incoming_message_actions
+                    - contact_actions
+                    - message_actions
+                    - project_actions
+                    - message_status_actions
+                    - voice_actions
+                    - ussd_actions
+                    - data_row_actions
                     - incoming_message_webhook
+                    - messaging_poll
+                    - scheduled_actions
                     - incoming_message_script
                     - contact_script
                     - message_script
                     - data_row_script
+                    - scheduled_script
                     - webhook_script
                     - voice_script
                     - ussd_script
                     - project_script
+                    - opt_out_page
+                    - button_page
                     - custom_template_instance
                     
                     Other types of services can only be created via the web app.
                 * Required
             
             - config (dict)
-                * Configuration specific to the service `type`.
-                    
-                    **incoming_message_webhook**:
-                    <table>
-                    <tr><td> url </td> <td> The webhook URL that will be
-                    triggered when an incoming message is received (string) </td></tr>
-                    <tr><td> secret </td> <td> Optional string that will
-                    be passed as the `secret` POST parameter to the webhook URL. (object) </td></tr>
-                    </table>
-                    <br />
-                    
-                    **incoming_message_script, contact_script,
-                    message_script, data_row_script, webhook_script, voice_script, ussd_script,
-                    project_script**:
-                    <table>
-                    <tr><td> code </td> <td> The JavaScript code to run
-                    when the service is triggered (max 100 KB). To run code longer than 100 KB, use a
-                    Cloud Script Module. (string) </td></tr>
-                    </table>
-                    <br />
-                    
-                    **custom_template_instance**:
-                    <table>
-                    <tr><td> template_service_id </td> <td> ID of the
-                    service template (string). The service template must be available to the current
-                    project or organization.</td></tr>
-                    <tr><td> params </td> <td> Key/value pairs for all
-                    service template parameters (object). If the values satisfy the validation rules
-                    specified in the service template, they will also be copied to the `vars` property
-                    of the service. Any values not associated with service template parameters will be
-                    ignored.
-                    </td></tr>
-                    </table>
-                    <br />
+                * Configuration specific to the `service_type`. See [Service Configuration
+                    Reference](#service_config) for complete documentation of configuration parameters
+                    for each service type.
                 * Required
             
             - vars
@@ -2106,7 +2526,21 @@ class Project(Entity):
             - message_types (array)
                 * Types of messages that this service should handle. Only applies to services that
                     handle incoming messages.
-                * Allowed values: text, call, sms, mms, ussd_session, chat
+                * Allowed values: text, call, ussd
+            
+            - table_ids (array)
+                * IDs of data tables that this service applies to, or null to apply to all data
+                    tables. Only applies to data row services (`data_row_script` and
+                    `data_row_actions`).
+            
+            - message_statuses (array of strings)
+                * Message statuses that this service should handle. Only applies to
+                    `message_status_actions` services.
+                * Allowed values: sent, delivered, failed, failed_queued, not_delivered
+            
+            - tags (array of strings)
+                * Tags used to organize this service. Each tag can be up to 32 characters in length,
+                    and up to 10 tags are allowed.
             
             - show_action (bool)
                 * Whether to show this service in the Actions menu within the Telerivet web app when
@@ -2163,7 +2597,8 @@ class Project(Entity):
             
             - context
                 * Filter services that can be invoked in a particular context
-                * Allowed values: message, call, ussd_session, row, contact, project
+                * Allowed values: message, call, ussd_session, row, contact, project,
+                    airtime_transaction
             
             - sort
                 * Sort the results based on a field
@@ -2360,6 +2795,35 @@ class Project(Entity):
         from .route import Route
         return self._api.newApiCursor(Route, self.getBaseApiPath() + "/routes", options)
 
+    def createRoute(self, **options):
+        """
+        Creates a new custom route that can be used to send messages via one or more basic routes
+        (phones).
+        
+        The `actions` array defines the routing rules.
+        
+        Arguments:
+              * Required
+            
+            - name (string)
+                * Name of the custom route to create
+                * Required
+            
+            - actions (array of RoutingAction)
+                * Array of routing action objects. Allowed action types: `use_phone` (select basic
+                    routes to send messages), `condition` (conditionally execute actions based on
+                    criteria).
+                * Required
+            
+            - vars
+                * Custom variables and values to set for this route
+          
+        Returns:
+            Route
+        """
+        from .route import Route
+        return Route(self._api, self._api.doRequest("POST", self.getBaseApiPath() + "/routes", options))
+
     def getRouteById(self, id):
         """
         Gets a custom route by ID
@@ -2479,9 +2943,9 @@ class Project(Entity):
     def getContactFields(self):
         """
         Gets a list of all custom fields defined for contacts in this project. The return value is
-        an array of objects with the properties 'name', 'variable', 'type', 'order', 'readonly', and
-        'lookup_key'. (Fields are automatically created any time a Contact's 'vars' property is
-        updated.)
+        an array of objects with the properties 'name', 'variable', 'type', 'order', 'readonly',
+        'lookup_key', and 'show_on_conversation'. (Fields are automatically created any time a
+        Contact's 'vars' property is updated.)
         
         Returns:
             array
@@ -2515,9 +2979,9 @@ class Project(Entity):
             
             - items (array)
                 * Array of up to 100 objects containing `value` and `label` string properties to
-                    show in the dropdown list when type is `select`. Each `value` and `label` must be
-                    between 1 and 256 characters in length.
-                * Required if type is `select`
+                    show when type is `select` or `radio`. Each `value` and `label` must be between 1
+                    and 256 characters in length.
+                * Required if type is `select` or `radio`
             
             - readonly (bool)
                 * Set to true to prevent editing the field in the Telerivet web app
@@ -2537,8 +3001,8 @@ class Project(Entity):
     def getMessageFields(self):
         """
         Gets a list of all custom fields defined for messages in this project. The return value is
-        an array of objects with the properties 'name', 'variable', 'type', 'order', 'readonly', and
-        'lookup_key'. (Fields are automatically created any time a Contact's 'vars' property is
+        an array of objects with the properties 'name', 'variable', 'type', 'order', and
+        'hide_values'. (Fields are automatically created any time a Message's 'vars' property is
         updated.)
         
         Returns:
@@ -2573,9 +3037,9 @@ class Project(Entity):
             
             - items (array)
                 * Array of up to 100 objects containing `value` and `label` string properties to
-                    show in the dropdown list when type is `select`. Each `value` and `label` must be
-                    between 1 and 256 characters in length.
-                * Required if type is `select`
+                    show when type is `select` or `radio`. Each `value` and `label` must be between 1
+                    and 256 characters in length.
+                * Required if type is `select` or `radio`
             
             - hide_values (bool)
                 * Set to true to avoid showing values of this field on the Messages page
@@ -2588,8 +3052,9 @@ class Project(Entity):
     def getMessageStats(self, **options):
         """
         Retrieves statistics about messages sent or received via Telerivet. This endpoint returns
-        historical data that is computed shortly after midnight each day in the project's time zone,
-        and does not contain message statistics for the current day.
+        historical data that is computed shortly after midnight each day in the project's time zone.
+        If the date range includes the current day, it will include statistics for the current day
+        so far.
         
         Arguments:
               * Required
@@ -2636,32 +3101,101 @@ class Project(Entity):
               - intervals (array)
                   * List of objects representing each date interval containing at least one message
                       matching the filters.
-                      Each object has the following properties:
-                      
-                      <table>
-                      <tr><td> start_time </td> <td> The UNIX timestamp of the start
-                      of the interval (int) </td></tr>
-                      <tr><td> end_time </td> <td> The UNIX timestamp of the end of
-                      the interval, exclusive (int) </td></tr>
-                      <tr><td> start_date </td> <td> The date of the start of the
-                      interval in YYYY-MM-DD format (string) </td></tr>
-                      <tr><td> end_date </td> <td> The date of the end of the
-                      interval in YYYY-MM-DD format, inclusive (string) </td></tr>
-                      <tr><td> groups </td> <td> Array of groups for each
-                      combination of requested property values matching the filters (array)
-                      <br /><br />
-                      Each object has the following properties:
-                      <table>
-                      <tr><td> properties </td> <td> An object of key/value
-                      pairs for each distinct value of the requested properties (object) </td></tr>
-                      <tr><td> metrics </td> <td> An object of key/value pairs
-                      for each requested metric (object) </td></tr>
-                      </table>
-                      </td></tr>
-                      </table>
         """
         data = self._api.doRequest("GET", self.getBaseApiPath() + "/message_stats", options)
         return data
+
+    def queryWebhooks(self, **options):
+        """
+        Queries webhooks within the given project.
+        
+        Arguments:
+            
+            - sort
+                * Sort the results based on a field
+                * Allowed values: default
+                * Default: default
+            
+            - sort_dir
+                * Sort the results in ascending or descending order
+                * Allowed values: asc, desc
+                * Default: asc
+            
+            - page_size (int)
+                * Number of results returned per page (max 500)
+                * Default: 50
+            
+            - offset (int)
+                * Number of items to skip from beginning of result set
+                * Default: 0
+          
+        Returns:
+            APICursor (of Webhook)
+        """
+        from .webhook import Webhook
+        return self._api.newApiCursor(Webhook, self.getBaseApiPath() + "/webhooks", options)
+
+    def createWebhook(self, **options):
+        """
+        Creates a new webhook that will be triggered when specific events occur within the project.
+        
+        Note: The Webhook object is not used for notifying your server when
+        incoming messages are received. To notify a URL when incoming messages are received, you can
+        configure a webhook by [creating a Service](#Project.createService) with type
+        incoming_message_webhook.
+        
+        Arguments:
+              * Required
+            
+            - url
+                * URL to send webhook requests to. Must start with https:// or http://.
+                * Required
+            
+            - secret
+                * Secret to include when sending webhook requests (up to 200 characters). Telerivet
+                    will send the secret in the password field of HTTP basic auth (with username
+                    'telerivet').
+            
+            - events (array of strings)
+                * Array of event types to trigger this webhook. Valid event types are: `send_status`
+                    (message status updates), `send_broadcast` (broadcast sent), `contact_update`
+                    (contact added/updated/deleted), `message_metadata` (message metadata updated).
+          
+        Returns:
+            Webhook
+        """
+        from .webhook import Webhook
+        return Webhook(self._api, self._api.doRequest("POST", self.getBaseApiPath() + "/webhooks", options))
+
+    def getWebhookById(self, id):
+        """
+        Retrieves the webhook with the given ID.
+        
+        Arguments:
+          - id
+              * ID of the webhook
+              * Required
+          
+        Returns:
+            Webhook
+        """
+        from .webhook import Webhook
+        return Webhook(self._api, self._api.doRequest("GET", self.getBaseApiPath() + "/webhooks/%s" % (id)))
+
+    def initWebhookById(self, id):
+        """
+        Initializes the webhook with the given ID without making an API request.
+        
+        Arguments:
+          - id
+              * ID of the webhook
+              * Required
+          
+        Returns:
+            Webhook
+        """
+        from .webhook import Webhook
+        return Webhook(self._api, {'project_id': self.id, 'id': id}, False)
 
     def save(self):
         """

@@ -170,6 +170,11 @@ class ScheduledMessage(Entity):
       - project_id
           * ID of the project this scheduled message belongs to
           * Read-only
+      
+      - is_template (bool)
+          * Set to true if Telerivet will render variables like [[contact.name]] in the message
+              content
+          * Read-only
     """
 
     def save(self):

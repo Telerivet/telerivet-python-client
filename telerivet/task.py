@@ -59,6 +59,10 @@ class Task(Entity):
           * Allowed values: created, queued, active, complete, failed, cancelled
           * Read-only
       
+      - error_message (string)
+          * Error message if the task failed
+          * Read-only
+      
       - vars (dict)
           * Custom variables stored for this task. Variable names may be up to 32 characters in
               length and can contain the characters a-z, A-Z, 0-9, and _.
