@@ -29,7 +29,8 @@ class Message(Entity):
       
       - source
           * How the message originated within Telerivet
-          * Allowed values: phone, provider, web, api, service, webhook, scheduled, integration
+          * Allowed values: phone, provider, web, api, service, webhook, scheduled, integration,
+              mcp
           * Read-only
       
       - time_created (UNIX timestamp)
@@ -180,11 +181,8 @@ class Message(Entity):
           * Read-only
       
       - media (array)
-          * For text messages containing media files, this is an array of objects with the
-              properties `url`, `type` (MIME type), `filename`, and `size` (file size in bytes).
-              Unknown properties are null. This property is undefined for messages that do not
-              contain media files. Note: For files uploaded via the Telerivet web app, the URL is
-              temporary and may not be valid for more than 1 day.
+          * Array of media attachments for the text message. This property is undefined for
+              messages that do not contain media files.
           * Read-only
       
       - mms_parts (array)
@@ -245,6 +243,10 @@ class Message(Entity):
       
       - project_id
           * ID of the project this contact belongs to
+          * Read-only
+      
+      - url
+          * URL to the message detail page in the Telerivet web app
           * Read-only
     """
 
@@ -350,6 +352,20 @@ class Message(Entity):
         """
         from .message import Message
         return Message(self._api, self._api.doRequest("POST", self.getBaseApiPath() + "/cancel"))
+
+    def sendReadReceipt(self):
+        """
+        Sends a read receipt for this message. Currently only supported for incoming WhatsApp
+        messages.
+        """
+        self._api.doRequest("POST", self.getBaseApiPath() + "/send_read_receipt")
+
+    def sendTypingIndicator(self):
+        """
+        Sends a typing indicator for this message. Currently only supported for incoming WhatsApp
+        messages.
+        """
+        self._api.doRequest("POST", self.getBaseApiPath() + "/send_typing_indicator")
 
     def getBaseApiPath(self):
         return "/projects/%(project_id)s/messages/%(id)s" % {'project_id': self.project_id, 'id': self.id} 

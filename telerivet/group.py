@@ -19,6 +19,22 @@ class Group(Entity):
           * Whether this is a dynamic or normal group
           * Read-only
       
+      - filters (dict)
+          * Key-value pairs of conditions that contacts must match to be members of a dynamic
+              group. To filter by a custom variable, precede the variable name with 'vars.'
+              (conditions on custom variables may also be provided as a nested object under a `vars`
+              key, e.g. `{"vars": {"city": "Manila"}}`); other supported keys are `id`, `name`,
+              `phone_number`, `time_created`, `time_updated`, `incoming_message_count`,
+              `outgoing_message_count`, `last_incoming_message_time`, `last_outgoing_message_time`,
+              `conversation_status`, `send_blocked`, `group` (ID of a normal group whose members
+              should be included), `not_group` (ID of a normal group whose members should be
+              excluded), and `q` (full-text search query matching contacts like the search box in
+              the web app). Each value is either a value to match exactly, or an object with an
+              operator such as `ne`, `prefix`, `gte`, `lt`, `exists`, or `not_exists` as the key
+              (e.g. `{"gte": 10}`). Null if this is a normal group. Filter conditions can only be
+              updated on dynamic groups.
+          * Updatable via API
+      
       - num_members (int)
           * Number of contacts in the group (null if the group is dynamic)
           * Read-only
@@ -45,6 +61,10 @@ class Group(Entity):
               Up to 100 variables are supported per object.
               Setting a variable to null will delete the variable.
           * Updatable via API
+      
+      - url
+          * URL to this group in the Telerivet web app
+          * Read-only
       
       - project_id
           * ID of the project this group belongs to

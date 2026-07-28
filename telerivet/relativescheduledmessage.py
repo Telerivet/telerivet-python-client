@@ -37,10 +37,10 @@ class RelativeScheduledMessage(Entity):
           * Updatable via API
       
       - offset_scale
-          * The type of interval (day/week/month/year) that will be used to adjust the scheduled
-              date relative to the date stored in the contact's date_variable, when offset_count is
-              non-zero (D=day, W=week, M=month, Y=year)
-          * Allowed values: D, W, M, Y
+          * The type of interval that will be used to adjust the scheduled date relative to the
+              date stored in the contact's date_variable, when offset_count is non-zero (I=minutes,
+              D=day, W=week, M=month, Y=year)
+          * Allowed values: I, D, W, M, Y
           * Updatable via API
       
       - offset_count (int)
@@ -127,12 +127,9 @@ class RelativeScheduledMessage(Entity):
           * Updatable via API
       
       - media (array)
-          * For text messages containing media files, this is an array of objects with the
-              properties `url`, `type` (MIME type), `filename`, and `size` (file size in bytes).
-              Unknown properties are null. This property is undefined for messages that do not
-              contain media files. Note: For files uploaded via the Telerivet web app, the URL is
-              temporary and may not be valid for more than 1 day.
-          * Read-only
+          * Array of media attachments for the text message. This property is undefined for
+              messages that do not contain media files.
+          * Updatable via API
       
       - route_params (dict)
           * Route-specific parameters to use when sending the message.

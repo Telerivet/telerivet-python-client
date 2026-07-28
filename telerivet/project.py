@@ -26,6 +26,7 @@ class Project(Entity):
       
       - url_slug
           * Unique string used as a component of the project's URL in the Telerivet web app
+              (required length: 3-18 characters)
           * Updatable via API
       
       - default_route_id
@@ -64,6 +65,10 @@ class Project(Entity):
       
       - organization_id (string, max 34 characters)
           * ID of the organization this project belongs to
+          * Read-only
+      
+      - url
+          * URL to this project in the Telerivet web app
           * Read-only
     """
 
@@ -105,9 +110,7 @@ class Project(Entity):
             
             - replace_variables (bool)
                 * Set to true to evaluate variables like [[contact.name]] in message content. [(See
-                    available variables)](#variables) (`is_template` parameter also accepted). The
-                    double square brackets may also include [filters](/api/rules_engine#filters) to
-                    transform variables, such as to set a default value.
+                    available variables)](#variables)
                 * Default: false
             
             - track_clicks (boolean)
@@ -129,18 +132,15 @@ class Project(Entity):
                     destination URL.
                     If null, the short links will not expire.
             
-            - media_urls (array of strings)
-                * URLs of media files to attach to the text message. If `message_type` is `sms`,
-                    short links to each URL will be appended to the end of the content (separated by a
-                    new line).
+            - media (array)
+                * Array of media attachments for the text message.
                     
+                    If sending a type of message that doesn't support attachments (e.g. SMS),
+                    short links to each media URL will be appended to the end of the content (separated
+                    by a new line).
                     
-                    By default, each file must have a https:// or http:// URL, which requires the file
-                    to be uploaded somewhere that is accessible via the internet. For media files that
-                    are not already accessible via the internet, the media_urls parameter also supports
-                    data URIs with the file data encoded via Base64 (e.g. "data:image/png;base64,..."),
-                    with a maximum file size of 2 MB. To send media via data URIs, contact Telerivet to
-                    request enabling the data URIs feature for your project.
+                    Alternatively, you can use the `media_urls` parameter with an array of URL
+                    strings.
             
             - route_params (dict)
                 * Route-specific parameters for the message.
@@ -255,8 +255,8 @@ class Project(Entity):
                     set)
             
             - replace_variables (bool)
-                * Set to true to evaluate variables like [[contact.name]] in message content [(See
-                    available variables)](#variables) (`is_template` parameter also accepted)
+                * Set to true to evaluate variables like [[contact.name]] in message content. [(See
+                    available variables)](#variables)
                 * Default: false
             
             - track_clicks (boolean)
@@ -278,18 +278,15 @@ class Project(Entity):
                     destination URL.
                     If null, the short links will not expire.
             
-            - media_urls (array of strings)
-                * URLs of media files to attach to the text message. If `message_type` is `sms`,
-                    short links to each URL will be appended to the end of the content (separated by a
-                    new line).
+            - media (array)
+                * Array of media attachments for the text message.
                     
+                    If sending a type of message that doesn't support attachments (e.g. SMS),
+                    short links to each media URL will be appended to the end of the content (separated
+                    by a new line).
                     
-                    By default, each file must have a https:// or http:// URL, which requires the file
-                    to be uploaded somewhere that is accessible via the internet. For media files that
-                    are not already accessible via the internet, the media_urls parameter also supports
-                    data URIs with the file data encoded via Base64 (e.g. "data:image/png;base64,..."),
-                    with a maximum file size of 2 MB. To send media via data URIs, contact Telerivet to
-                    request enabling the data URIs feature for your project.
+                    Alternatively, you can use the `media_urls` parameter with an array of URL
+                    strings.
             
             - vars (dict)
                 * Custom variables to set for each message
@@ -382,8 +379,8 @@ class Project(Entity):
                 * Array of IDs of labels to add to each message (maximum 5)
             
             - replace_variables (bool)
-                * Set to true to evaluate variables like [[contact.name]] in message content [(See
-                    available variables)](#variables) (`is_template` parameter also accepted)
+                * Set to true to evaluate variables like [[contact.name]] in message content. [(See
+                    available variables)](#variables)
                 * Default: false
             
             - track_clicks (boolean)
@@ -405,18 +402,15 @@ class Project(Entity):
                     destination URL.
                     If null, the short links will not expire.
             
-            - media_urls (array of strings)
-                * URLs of media files to attach to the text message. If `message_type` is `sms`,
-                    short links to each URL will be appended to the end of the content (separated by a
-                    new line).
+            - media (array)
+                * Array of media attachments for the text message.
                     
+                    If sending a type of message that doesn't support attachments (e.g. SMS),
+                    short links to each media URL will be appended to the end of the content (separated
+                    by a new line).
                     
-                    By default, each file must have a https:// or http:// URL, which requires the file
-                    to be uploaded somewhere that is accessible via the internet. For media files that
-                    are not already accessible via the internet, the media_urls parameter also supports
-                    data URIs with the file data encoded via Base64 (e.g. "data:image/png;base64,..."),
-                    with a maximum file size of 2 MB. To send media via data URIs, contact Telerivet to
-                    request enabling the data URIs feature for your project.
+                    Alternatively, you can use the `media_urls` parameter with an array of URL
+                    strings.
             
             - route_params (dict)
                 * Route-specific parameters to apply to all messages.
@@ -593,22 +587,19 @@ class Project(Entity):
                     If null, the short links will not expire.
             
             - replace_variables (bool)
-                * Set to true to evaluate variables like [[contact.name]] in message content
-                    (`is_template` parameter also accepted)
+                * Set to true to evaluate variables like [[contact.name]] in message content. [(See
+                    available variables)](#variables)
                 * Default: false
             
-            - media_urls (array of strings)
-                * URLs of media files to attach to the text message. If `message_type` is `sms`,
-                    short links to each URL will be appended to the end of the content (separated by a
-                    new line).
+            - media (array)
+                * Array of media attachments for the text message.
                     
+                    If sending a type of message that doesn't support attachments (e.g. SMS),
+                    short links to each media URL will be appended to the end of the content (separated
+                    by a new line).
                     
-                    By default, each file must have a https:// or http:// URL, which requires the file
-                    to be uploaded somewhere that is accessible via the internet. For media files that
-                    are not already accessible via the internet, the media_urls parameter also supports
-                    data URIs with the file data encoded via Base64 (e.g. "data:image/png;base64,..."),
-                    with a maximum file size of 2 MB. To send media via data URIs, contact Telerivet to
-                    request enabling the data URIs feature for your project.
+                    Alternatively, you can use the `media_urls` parameter with an array of URL
+                    strings.
             
             - route_params (dict)
                 * Route-specific parameters to use when sending the message.
@@ -700,10 +691,10 @@ class Project(Entity):
                 * Required
             
             - offset_scale
-                * The type of interval (day/week/month/year) that will be used to adjust the
-                    scheduled date relative to the date stored in the contact's date_variable, when
-                    offset_count is non-zero (D=day, W=week, M=month, Y=year)
-                * Allowed values: D, W, M, Y
+                * The type of interval that will be used to adjust the scheduled date relative to
+                    the date stored in the contact's date_variable, when offset_count is non-zero
+                    (I=minutes, D=day, W=week, M=month, Y=year)
+                * Allowed values: I, D, W, M, Y
                 * Default: D
             
             - offset_count (int)
@@ -768,21 +759,19 @@ class Project(Entity):
                     If null, the short links will not expire.
             
             - replace_variables (bool)
-                * Set to true to evaluate variables like [[contact.name]] in message content
+                * Set to true to evaluate variables like [[contact.name]] in message content. [(See
+                    available variables)](#variables)
                 * Default: false
             
-            - media_urls (array of strings)
-                * URLs of media files to attach to the text message. If `message_type` is `sms`,
-                    short links to each URL will be appended to the end of the content (separated by a
-                    new line).
+            - media (array)
+                * Array of media attachments for the text message.
                     
+                    If sending a type of message that doesn't support attachments (e.g. SMS),
+                    short links to each media URL will be appended to the end of the content (separated
+                    by a new line).
                     
-                    By default, each file must have a https:// or http:// URL, which requires the file
-                    to be uploaded somewhere that is accessible via the internet. For media files that
-                    are not already accessible via the internet, the media_urls parameter also supports
-                    data URIs with the file data encoded via Base64 (e.g. "data:image/png;base64,..."),
-                    with a maximum file size of 2 MB. To send media via data URIs, contact Telerivet to
-                    request enabling the data URIs feature for your project.
+                    Alternatively, you can use the `media_urls` parameter with an array of URL
+                    strings.
             
             - route_params (dict)
                 * Route-specific parameters to use when sending the message.
@@ -1179,48 +1168,53 @@ class Project(Entity):
         
         **Twilio Virtual Number** (`phone_type`: twilio):
         
-        - `external_id` (optional): The SID of your Twilio phone number (starts with 'PN'); if not
-        provided, it will be looked up by the phone_number parameter
-        - `external_account_id` (required): Your Twilio Account SID (starts with 'AC')
-        - `external_secret` (required): Your Twilio Auth Token
+        - external_id (optional): Twilio phone number SID (starts with 'PN'); looked up by
+        phone_number if not provided
+        - external_account_id (required): Twilio Account SID (starts with 'AC')
+        - external_secret (required): Twilio Auth Token
         
         **Twilio Messaging Service** (`phone_type`: twilio_messaging_service):
         
-        - `external_id` (required): The SID of your Twilio messaging service (starts with 'MG')
-        - `external_account_id` (required): Your Twilio Account SID (starts with 'AC')
-        - `external_secret` (required): Your Twilio Auth Token
+        - external_id (required): Twilio messaging service SID (starts with 'MG')
+        - external_account_id (required): Twilio Account SID (starts with 'AC')
+        - external_secret (required): Twilio Auth Token
         
         **Twilio Shortcode** (`phone_type`: twilio_shortcode):
         
-        - `external_id` (optional): The SID of your Twilio shortcode (starts with 'SC'); if not
-        provided, it will be looked up by the phone_number parameter
-        - `external_account_id` (required): Your Twilio Account SID (starts with 'AC')
-        - `external_secret` (required): Your Twilio Auth Token
+        - external_id (optional): Twilio shortcode SID (starts with 'SC'); looked up by phone_number
+        if not provided
+        - external_account_id (required): Twilio Account SID (starts with 'AC')
+        - external_secret (required): Twilio Auth Token
         
         **Twilio Caller ID** (`phone_type`: twilio_caller_id):
         
-        - `external_account_id` (required): Your Twilio Account SID (starts with 'AC')
-        - `external_secret` (required): Your Twilio Auth Token
+        - external_account_id (required): Twilio Account SID (starts with 'AC')
+        - external_secret (required): Twilio Auth Token
         
-        **Vonage Virtual Number or Vonage Sender ID** (`phone_type`: nexmo or nexmo_sender_id):
+        **Vonage Virtual Number** (`phone_type`: nexmo):
         
-        - `external_account_id` (required): Your Vonage API Key
-        - `external_secret` (required): Your Vonage API Secret
+        - external_account_id (required): Vonage API Key
+        - external_secret (required): Vonage API Secret
+        
+        **Vonage Sender ID** (`phone_type`: nexmo_sender_id):
+        
+        - external_account_id (required): Vonage API Key
+        - external_secret (required): Vonage API Secret
         
         **Telesign SMS** (`phone_type`: telesign):
         
-        - `external_account_id` (required): Your Telesign Customer ID
-        - `external_secret` (required): Your Telesign API Key
-        - `external_config.message_type`: `ARN`, `MKT`, or `OTP`
-        - `external_config.sender_type`: `one_way` (default) or `two_way`
+        - external_account_id (required): Telesign Customer ID
+        - external_secret (required): Telesign API Key
+        - external_config.message_type: ARN, MKT, or OTP
+        - external_config.sender_type: one_way (default) or two_way
         
         **Infobip SMS** (`phone_type`: infobip):
         
-        - `external_account_id` (required): Your Infobip username
-        - `external_secret` (required): Your Infobip API key
-        - `external_config.sender_type`: `one_way` (default) or `two_way`
-        - `external_config.india_dlt_principal_entity_id`: India DLT Principal Entity ID (only
-        needed if sending to India)
+        - external_account_id (required): Infobip username
+        - external_secret (required): Infobip API key
+        - external_config.sender_type: one_way (default) or two_way
+        - external_config.india_dlt_principal_entity_id: India DLT Principal Entity ID (only for
+        India)
         
         **Infobip USSD** (`phone_type`: infobip_ussd):
         
@@ -1228,9 +1222,9 @@ class Project(Entity):
         
         **Africa's Talking SMS** (`phone_type`: africas_talking):
         
-        - `external_account_id` (required): Your Africa's Talking username
-        - `external_secret` (required): Your Africa's Talking API key
-        - `external_config.sender_type`: `one_way` (default) or `two_way`
+        - external_account_id (required): Africa's Talking username
+        - external_secret (required): Africa's Talking API key
+        - external_config.sender_type: one_way (default) or two_way
         
         **Africa's Talking USSD** (`phone_type`: africas_talking_ussd):
         
@@ -1375,7 +1369,7 @@ class Project(Entity):
             - source
                 * Filter messages by source
                 * Allowed values: phone, provider, web, api, service, webhook, scheduled,
-                    integration
+                    integration, mcp
             
             - starred (bool)
                 * Filter messages by starred/unstarred
@@ -1539,6 +1533,207 @@ class Project(Entity):
         """
         from .broadcast import Broadcast
         return Broadcast(self._api, {'project_id': self.id, 'id': id}, False)
+
+    def queryCampaigns(self, **options):
+        """
+        Queries campaigns within the given project.
+        
+        Arguments:
+            
+            - name
+                * Filter campaigns by name
+                * Allowed modifiers: name[ne], name[prefix], name[not_prefix], name[gte], name[gt],
+                    name[lt], name[lte]
+            
+            - status
+                * Filter campaigns by status
+                * Allowed values: draft, scheduled, sent, pending_review
+            
+            - campaign_type
+                * Filter campaigns by type
+                * Allowed values: broadcast_text, broadcast_call, broadcast_svc, relative,
+                    anniversary
+            
+            - group_id
+                * Filter campaigns by the recipient group
+            
+            - label_id
+                * Filter campaigns by an associated label
+            
+            - time_created[min] (UNIX timestamp)
+                * Filter campaigns created on or after a particular time
+            
+            - time_created[max] (UNIX timestamp)
+                * Filter campaigns created before a particular time
+            
+            - schedule_time[min] (UNIX timestamp)
+                * Filter broadcast campaigns scheduled on or after a particular time
+            
+            - schedule_time[max] (UNIX timestamp)
+                * Filter broadcast campaigns scheduled before a particular time
+            
+            - sort
+                * Sort the results based on a field
+                * Allowed values: default, name, schedule_time
+                * Default: default
+            
+            - sort_dir
+                * Sort the results in ascending or descending order
+                * Allowed values: asc, desc
+                * Default: asc
+            
+            - page_size (int)
+                * Number of results returned per page (max 500)
+                * Default: 50
+            
+            - offset (int)
+                * Number of items to skip from beginning of result set
+                * Default: 0
+          
+        Returns:
+            APICursor (of Campaign)
+        """
+        from .campaign import Campaign
+        return self._api.newApiCursor(Campaign, self.getBaseApiPath() + "/campaigns", options)
+
+    def getCampaignById(self, id):
+        """
+        Retrieves the campaign with the given ID.
+        
+        Arguments:
+          - id
+              * ID of the campaign
+              * Required
+          
+        Returns:
+            Campaign
+        """
+        from .campaign import Campaign
+        return Campaign(self._api, self._api.doRequest("GET", self.getBaseApiPath() + "/campaigns/%s" % (id)))
+
+    def initCampaignById(self, id):
+        """
+        Initializes the Telerivet campaign with the given ID without making an API request.
+        
+        Arguments:
+          - id
+              * ID of the campaign
+              * Required
+          
+        Returns:
+            Campaign
+        """
+        from .campaign import Campaign
+        return Campaign(self._api, {'project_id': self.id, 'id': id}, False)
+
+    def createCampaign(self, **options):
+        """
+        Creates a new draft campaign, without sending it.
+        
+        Arguments:
+              * Required
+            
+            - campaign_type
+                * Type of campaign to create
+                * Allowed values: broadcast_text, broadcast_call, broadcast_svc, relative,
+                    anniversary
+                * Required
+            
+            - name
+                * Name of the campaign
+            
+            - group_id
+                * ID of the group of contacts to send the campaign to
+            
+            - exclude_group_id
+                * ID of a group of contacts to exclude from this campaign
+            
+            - route_id
+                * ID of the phone or route to send the campaign from
+            
+            - timezone_id
+                * ID of the timezone to use for scheduling
+            
+            - label_ids (array)
+                * IDs of labels to apply to messages sent by this campaign
+            
+            - respondent_group_id
+                * ID of the group to add contacts to after they respond
+            
+            - clicked_group_id
+                * ID of the group to add contacts to after they click a link
+            
+            - schedule_mode
+                * Indicates whether the campaign should be sent immediately or at a future time
+                    (broadcast campaigns only). If `schedule_time` is set, `schedule_mode` is
+                    automatically set to `at_time`. If `schedule_mode` is set to `immediate` or `null`,
+                    `schedule_time` is automatically cleared.
+                    
+                    Note that the campaign will not actually be sent or
+                    scheduled until the API method is called to [send the campaign](#Campaign.send).
+                * Allowed values: immediate, at_time
+            
+            - schedule_time (UNIX timestamp)
+                * When the campaign is scheduled to be sent, as a UNIX timestamp (broadcast
+                    campaigns only). Setting this to a non-null value automatically sets `schedule_mode`
+                    to `at_time`.
+                    
+                    Note that the campaign will not actually be scheduled
+                    until the API method is called to [schedule the campaign](#Campaign.send).
+            
+            - content
+                * Text content of the message (`broadcast_text` campaigns), or the text-to-speech
+                    text for voice calls (`broadcast_call` campaigns). May contain variables like
+                    `[[contact.name]]`.
+                    
+                    [(See available variables)](#variables)
+            
+            - media (array)
+                * Array of media attachments (`broadcast_text` campaigns only).
+            
+            - route_params (dict)
+                * Route-specific parameters for the message (`broadcast_text` campaigns only). See
+                    [Route-Specific Parameters](#route_params).
+            
+            - track_clicks (boolean)
+                * Whether to shorten links and track link clicks (`broadcast_text` campaigns only).
+            
+            - short_link_params (dict)
+                * Parameters for short links when `track_clicks` is enabled (`broadcast_text`
+                    campaigns only).
+            
+            - audio_url
+                * URL of an MP3 file to play for voice calls (`broadcast_call` campaigns only).
+            
+            - tts_lang
+                * Language for text-to-speech voice calls (`broadcast_call` campaigns only).
+                * Allowed values: en-US, en-GB, en-GB-WLS, en-AU, en-IN, da-DK, nl-NL, fr-FR, fr-CA,
+                    de-DE, is-IS, it-IT, pl-PL, pt-BR, pt-PT, ru-RU, es-ES, es-US, sv-SE
+            
+            - tts_voice
+                * Voice for text-to-speech voice calls (`broadcast_call` campaigns only).
+                * Allowed values: female, male
+            
+            - date_variable
+                * Custom contact variable storing date or date/time values relative to which
+                    messages will be scheduled (`relative` and `anniversary` campaigns only)
+            
+            - items (array)
+                * Array of campaign items (`relative` and `anniversary` campaigns only).
+            
+            - vars (dict)
+                * Custom variables and values to set for this campaign. Variable names may be up to
+                    32 characters in length and can contain the characters a-z, A-Z, 0-9, and _.
+                    Values may be strings, numbers, or boolean (true/false).
+                    String values may be up to 4096 bytes in length when encoded as UTF-8.
+                    Up to 100 variables are supported per object.
+                    Setting a variable to null will delete the variable.
+          
+        Returns:
+            Campaign
+        """
+        from .campaign import Campaign
+        return Campaign(self._api, self._api.doRequest("POST", self.getBaseApiPath() + "/campaigns", options))
 
     def createTask(self, **options):
         """
@@ -1860,7 +2055,9 @@ class Project(Entity):
 
     def getOrCreateGroup(self, name):
         """
-        Retrieves or creates a group by name.
+        Retrieves or creates a group by name. If a group with that name does not exist, a new normal
+        group will be created, initially empty. (To create a dynamic group, use
+        [project.createGroup](#Project.createGroup).)
         
         Arguments:
           - name
@@ -1872,6 +2069,64 @@ class Project(Entity):
         """
         from .group import Group
         return Group(self._api, self._api.doRequest("POST", self.getBaseApiPath() + "/groups", {'name': name}))
+
+    def createGroup(self, **options):
+        """
+        Creates a new group.
+        
+        If the `filters` parameter is provided, the group will be a dynamic
+        group whose members are determined by the filter conditions. Otherwise, it will be a normal
+        group, initially empty, with the ability to manually add members via
+        [contact.addToGroup](#Contact.addToGroup) and remove members via
+        [contact.removeFromGroup](#Contact.removeFromGroup).
+        
+        Dynamic group filter conditions can later be updated via the
+        `filters` property of the Group object; a group cannot be converted between a normal group
+        and a dynamic group after it is created.
+        
+        Arguments:
+              * Required
+            
+            - name (string)
+                * Name of the group (must be unique within the project)
+                * Required
+            
+            - filters (dict)
+                * Key-value pairs of conditions that contacts must match to be members of a dynamic
+                    group. To filter by a custom variable, precede the variable name with 'vars.'
+                    (conditions on custom variables may also be provided as a nested object under a
+                    `vars` key, e.g. `{"vars": {"city": "Manila"}}`); other supported keys are `id`,
+                    `name`, `phone_number`, `time_created`, `time_updated`, `incoming_message_count`,
+                    `outgoing_message_count`, `last_incoming_message_time`,
+                    `last_outgoing_message_time`, `conversation_status`, `send_blocked`, `group` (ID of
+                    a normal group whose members should be included), `not_group` (ID of a normal group
+                    whose members should be excluded), and `q` (full-text search query matching contacts
+                    like the search box in the web app). Each value is either a value to match exactly,
+                    or an object with an operator such as `ne`, `prefix`, `gte`, `lt`, `exists`, or
+                    `not_exists` as the key (e.g. `{"gte": 10}`).
+            
+            - allow_sending (bool)
+                * True if messages can be sent to this group, false otherwise.
+                * Default: 1
+            
+            - add_time_variable (string)
+                * Variable name of a custom contact field that will automatically be set to the
+                    current date/time on any contact that is added to the group. This variable will only
+                    be set if the contact does not already have a value for this variable.
+            
+            - vars (dict)
+                * Custom variables and values to set for this group. Variable names may be up to 32
+                    characters in length and can contain the characters a-z, A-Z, 0-9, and _.
+                    Values may be strings, numbers, or boolean (true/false).
+                    String values may be up to 4096 bytes in length when encoded as UTF-8.
+                    Up to 100 variables are supported per object.
+                    Setting a variable to null will delete the variable.
+          
+        Returns:
+            Group
+        """
+        from .group import Group
+        return Group(self._api, self._api.doRequest("POST", self.getBaseApiPath() + "/create_group", options))
 
     def getGroupById(self, id):
         """
@@ -2092,6 +2347,145 @@ class Project(Entity):
         """
         from .messagetemplate import MessageTemplate
         return MessageTemplate(self._api, {'project_id': self.id, 'id': id}, False)
+
+    def queryFiles(self, **options):
+        """
+        Queries files stored within the given project.
+        
+        Arguments:
+            
+            - filename
+                * Filter files by filename
+                * Allowed modifiers: filename[ne], filename[prefix], filename[not_prefix],
+                    filename[gte], filename[gt], filename[lt], filename[lte]
+            
+            - type
+                * Filter files by MIME type. A type ending in `/*` matches any subtype (e.g.
+                    `image/*`).
+            
+            - category
+                * Filter files by category
+                * Allowed values: outgoing_media, incoming_media, call_audio, test_recording,
+                    script_module, icon
+            
+            - source
+                * Filter files by how they were created
+                * Allowed values: upload, recording, message, api
+            
+            - size (int)
+                * Filter files by size in bytes
+                * Allowed modifiers: size[min], size[max]
+            
+            - time_created (UNIX timestamp)
+                * Filter files by time_created
+                * Allowed modifiers: time_created[min], time_created[max]
+            
+            - message_id
+                * Filter files associated with a particular message
+            
+            - sha256
+                * Filter files by the SHA-256 hash of the file content (lowercase hex), e.g. to
+                    check whether a particular file has already been uploaded
+            
+            - sort
+                * Sort the results based on a field
+                * Allowed values: default, filename, size, time_created
+                * Default: default
+            
+            - sort_dir
+                * Sort the results in ascending or descending order
+                * Allowed values: asc, desc
+                * Default: asc
+            
+            - page_size (int)
+                * Number of results returned per page (max 500)
+                * Default: 50
+            
+            - offset (int)
+                * Number of items to skip from beginning of result set
+                * Default: 0
+          
+        Returns:
+            APICursor (of StoredFile)
+        """
+        from .storedfile import StoredFile
+        return self._api.newApiCursor(StoredFile, self.getBaseApiPath() + "/files", options)
+
+    def uploadFile(self, **options):
+        """
+        Uploads a file to be stored by Telerivet.
+        
+        After uploading a file, it can be attached to an outgoing message by
+        passing its ID as a `file_id` item in the `media` parameter of
+        [project.sendMessage](#Project.sendMessage),
+        [project.sendBroadcast](#Project.sendBroadcast), or [project.sendMulti](#Project.sendMulti).
+        This makes it possible to upload a media file once and attach it to many messages, instead
+        of including the file content in every API request.
+        
+        The file content is provided inline via the `data` parameter,
+        encoded via Base64, with a maximum decoded file size of 5 MB. Image, video, audio, PDF, and
+        vCard files are supported.
+        
+        Files are deduplicated by content: if a file previously uploaded via
+        the API in the same project has the same content and MIME type, the existing stored file is
+        returned instead of creating a duplicate.
+        
+        Arguments:
+              * Required
+            
+            - data (string)
+                * Base64-encoded file content (max 5 MB decoded). Alternatively, a Base64 data URI
+                    such as `data:image/jpeg;base64,...`, in which case the `type` parameter may be
+                    omitted.
+                * Required
+            
+            - filename (string, max 127 characters)
+                * Filename of the stored file. If not provided, the filename is generated
+                    automatically.
+            
+            - type (string)
+                * MIME type of the file, e.g. `image/jpeg`. If `data` is a data URI, the type may be
+                    omitted, but must match the MIME type of the data URI if provided.
+                * Required unless `data` is a data URI
+            
+            - description (string, max 1000 characters)
+                * Description of the file
+          
+        Returns:
+            StoredFile
+        """
+        from .storedfile import StoredFile
+        return StoredFile(self._api, self._api.doRequest("POST", self.getBaseApiPath() + "/files", options))
+
+    def getFileById(self, id):
+        """
+        Retrieves the stored file with the given ID.
+        
+        Arguments:
+          - id
+              * ID of the stored file
+              * Required
+          
+        Returns:
+            StoredFile
+        """
+        from .storedfile import StoredFile
+        return StoredFile(self._api, self._api.doRequest("GET", self.getBaseApiPath() + "/files/%s" % (id)))
+
+    def initFileById(self, id):
+        """
+        Initializes the stored file with the given ID without making an API request.
+        
+        Arguments:
+          - id
+              * ID of the stored file
+              * Required
+          
+        Returns:
+            StoredFile
+        """
+        from .storedfile import StoredFile
+        return StoredFile(self._api, {'project_id': self.id, 'id': id}, False)
 
     def queryDataTables(self, **options):
         """
@@ -2475,8 +2869,13 @@ class Project(Entity):
                     - ussd_actions
                     - data_row_actions
                     - incoming_message_webhook
+                    - optin_optout
+                    - keyword_auto_reply
                     - messaging_poll
+                    - voice_poll
                     - scheduled_actions
+                    - auto_reply
+                    - call_auto_reply
                     - incoming_message_script
                     - contact_script
                     - message_script
@@ -2495,8 +2894,9 @@ class Project(Entity):
             
             - config (dict)
                 * Configuration specific to the `service_type`. See [Service Configuration
-                    Reference](#service_config) for complete documentation of configuration parameters
-                    for each service type.
+                    Reference](#service_config) or the machine-readable [OpenAPI
+                    specification](https://api.telerivet.com/openapi.json) for complete documentation of
+                    configuration parameters for each service type.
                 * Required
             
             - vars
@@ -2795,6 +3195,16 @@ class Project(Entity):
         from .route import Route
         return self._api.newApiCursor(Route, self.getBaseApiPath() + "/routes", options)
 
+    def getRouteList(self):
+        """
+        Returns a list of all available routes for sending messages in a project, including both
+        basic routes (phones) and custom routes.
+        
+        Returns:
+            array
+        """
+        return self._api.doRequest("GET", self.getBaseApiPath() + "/route_list")
+
     def createRoute(self, **options):
         """
         Creates a new custom route that can be used to send messages via one or more basic routes
@@ -2998,6 +3408,29 @@ class Project(Entity):
         """
         return self._api.doRequest("POST", self.getBaseApiPath() + "/contact_fields/%s" % (variable), options)
 
+    def updateContactFields(self, **options):
+        """
+        Updates metadata for one or more custom contact fields. Only the specified fields are
+        updated; other fields are not affected.
+        
+        To delete a field, include an object with the `variable` and
+        `delete` properties set (e.g. `{"variable": "my_field", "delete": true}`). Deleting a field
+        will also clear the corresponding variable on all contacts in the project.
+        
+        Arguments:
+              * Required
+            
+            - metadata (array)
+                * Array of up to 100 objects describing the fields to create, update, or delete.
+                    Each object must contain a `variable` property. Only the properties provided for
+                    each field will be updated.
+                * Required
+          
+        Returns:
+            array
+        """
+        return self._api.doRequest("POST", self.getBaseApiPath() + "/contact_fields", options)
+
     def getMessageFields(self):
         """
         Gets a list of all custom fields defined for messages in this project. The return value is
@@ -3049,6 +3482,29 @@ class Project(Entity):
         """
         return self._api.doRequest("POST", self.getBaseApiPath() + "/message_fields/%s" % (variable), options)
 
+    def updateMessageFields(self, **options):
+        """
+        Updates metadata for one or more custom message fields. Only the specified fields are
+        updated; other fields are not affected.
+        
+        To delete a field, include an object with the `variable` and
+        `delete` properties set (e.g. `{"variable": "my_field", "delete": true}`). Deleting a field
+        removes the metadata only; values stored on individual messages are not affected.
+        
+        Arguments:
+              * Required
+            
+            - metadata (array)
+                * Array of up to 100 objects describing the fields to create, update, or delete.
+                    Each object must contain a `variable` property. Only the properties provided for
+                    each field will be updated.
+                * Required
+          
+        Returns:
+            array
+        """
+        return self._api.doRequest("POST", self.getBaseApiPath() + "/message_fields", options)
+
     def getMessageStats(self, **options):
         """
         Retrieves statistics about messages sent or received via Telerivet. This endpoint returns
@@ -3080,15 +3536,13 @@ class Project(Entity):
             
             - metrics (string)
                 * Comma separated list of metrics to return (summed for each distinct value of the
-                    requested properties)
-                * Allowed values: count, num_parts, duration, price
+                    requested properties). Supported metrics are `count` (the number of messages),
+                    `num_parts` (the number of SMS parts), `duration` (the total duration of calls, in
+                    seconds), and `price.<currency>` (the total price of messages priced in the
+                    specified ISO 4217 currency, e.g. `price.USD`). Amounts are not converted between
+                    currencies: each `price.<currency>` metric only includes messages priced in the
+                    specified currency.
                 * Required
-            
-            - currency (string)
-                * Three-letter ISO 4217 currency code used when returning the 'price' field. If the
-                    original price was in a different currency, it will be converted to the requested
-                    currency using the approximate current exchange rate.
-                * Default: USD
             
             - filters (dict)
                 * Key-value pairs of properties and corresponding values; the returned statistics
@@ -3103,6 +3557,153 @@ class Project(Entity):
                       matching the filters.
         """
         data = self._api.doRequest("GET", self.getBaseApiPath() + "/message_stats", options)
+        return data
+
+    def getContactStats(self, **options):
+        """
+        Retrieves statistics about the number of contacts in the project (total or in particular
+        groups) over a date range. This endpoint returns historical data that is computed shortly
+        after midnight each day in the project's time zone. If the date range includes the current
+        day, it will include the current number of contacts.
+        
+        To get historical statistics for the number of contacts matching a
+        filter, use [project.createGroup](#Project.createGroup) to create a dynamic group for each
+        filter you want to track. However, the statistics will only be available for dates after the
+        dynamic group was created.
+        
+        Arguments:
+              * Required
+            
+            - start_date (string)
+                * Start date of contact statistics, in YYYY-MM-DD format
+                * Required
+            
+            - end_date (string)
+                * End date of contact statistics (inclusive), in YYYY-MM-DD format
+                * Required
+            
+            - rollup (string)
+                * Date interval to group by
+                * Allowed values: day, week, month, year
+                * Default: day
+            
+            - cumulative (bool)
+                * If true, each interval contains the total number of contacts at the end of the
+                    interval; if false, each interval contains the change in the number of contacts
+                    during the interval.
+                * Default: 1
+            
+            - series (string)
+                * Comma separated list of up to 10 data series to return, corresponding to the keys
+                    of the `values` object in the response. Each item is either `total` (the total
+                    number of contacts in the project) or a group ID (the number of contacts in that
+                    group).
+                * Default: total
+          
+        Returns:
+            (associative array)
+              - intervals (array)
+                  * List of objects representing each date interval.
+        """
+        data = self._api.doRequest("GET", self.getBaseApiPath() + "/contact_stats", options)
+        return data
+
+    def getDataTableStats(self, **options):
+        """
+        Retrieves statistics about the number of rows in particular data tables or data table views
+        over a date range. This endpoint returns historical data that is computed shortly after
+        midnight each day in the project's time zone. If the date range includes the current day, it
+        will include the current number of rows.
+        
+        Arguments:
+              * Required
+            
+            - start_date (string)
+                * Start date of data table statistics, in YYYY-MM-DD format
+                * Required
+            
+            - end_date (string)
+                * End date of data table statistics (inclusive), in YYYY-MM-DD format
+                * Required
+            
+            - rollup (string)
+                * Date interval to group by
+                * Allowed values: day, week, month, year
+                * Default: day
+            
+            - cumulative (bool)
+                * If true, each interval contains the number of rows in each data table at the end
+                    of the interval; if false, each interval contains the change in the number of rows
+                    during the interval.
+                * Default: 1
+            
+            - series (string)
+                * Comma separated list of up to 10 data table IDs and/or data table view IDs,
+                    corresponding to the keys of the `values` object in the response.
+                * Required
+          
+        Returns:
+            (associative array)
+              - intervals (array)
+                  * List of objects representing each date interval.
+        """
+        data = self._api.doRequest("GET", self.getBaseApiPath() + "/data_table_stats", options)
+        return data
+
+    def getAirtimeStats(self, **options):
+        """
+        Retrieves statistics about airtime transactions sent via Telerivet. This endpoint returns
+        historical data for successful transactions that is computed shortly after midnight each day
+        in the project's time zone. If the date range includes the current day, it will include
+        statistics for the current day so far.
+        
+        Arguments:
+              * Required
+            
+            - start_date (string)
+                * Start date of airtime statistics, in YYYY-MM-DD format
+                * Required
+            
+            - end_date (string)
+                * End date of airtime statistics (inclusive), in YYYY-MM-DD format
+                * Required
+            
+            - rollup (string)
+                * Date interval to group by
+                * Allowed values: day, week, month, year, all
+                * Default: day
+            
+            - properties (string)
+                * Comma separated list of properties to group by. The `provider_category` property
+                    combines the provider type and category ID (e.g. `main.airtime.dtone/1`); also group
+                    by `category_name` to return the category's display name.
+                * Allowed values: country, operator_name, product_id, provider_id,
+                    provider_category, category_name
+            
+            - metrics (string)
+                * Comma separated list of metrics to return (summed for each distinct value of the
+                    requested properties). Supported metrics are `count` (the number of successful
+                    transactions), `value.<currency>` (the face value of the airtime received by the
+                    recipients, e.g. `value.KES`), and `price.<currency>` (the amount charged for the
+                    transactions, e.g. `price.USD`). Amounts are not converted between currencies: each
+                    `value`/`price` metric only includes transactions denominated in the specified ISO
+                    4217 currency, and transactions without a numeric currency value (such as bundles)
+                    are not included in any `value` metric.
+                * Required
+            
+            - filters (dict)
+                * Key-value pairs of properties and corresponding values; the returned statistics
+                    will only include successful airtime transactions where the property matches the
+                    provided value. Only the following properties are supported for filters: `country`,
+                    `operator_name`, `product_id`, `provider_id`, `provider_category`
+          
+        Returns:
+            (associative array)
+              - intervals (array)
+                  * List of objects representing each date interval containing at least one
+                      successful airtime transaction matching the filters.
+        """
+        data = self._api.doRequest("GET", self.getBaseApiPath() + "/airtime_stats", options)
         return data
 
     def queryWebhooks(self, **options):
